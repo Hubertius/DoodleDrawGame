@@ -11,6 +11,6 @@ Window {
     Button {
         anchors.centerIn: parent
         text: "Click me!"
-        onClicked: clientSocketHandler.connectToServer("www.google.com")
+        onClicked: clientSocketHandler.connectToServer("ws://127.0.0.1:8585")
     }
 }
