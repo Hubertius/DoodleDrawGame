@@ -1,5 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
+        <file>ui/MainMenuScreen.qml</file>
+        <file>ui/GameButton.qml</file>
     </qresource>
 </RCC>

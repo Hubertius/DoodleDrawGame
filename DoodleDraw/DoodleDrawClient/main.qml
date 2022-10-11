@@ -6,11 +6,11 @@ Window {
     width: 640
     height: 480
     visible: true
-    title: qsTr("Hello World")
+    title: qsTr("DoodleDrawClient")
 
-    Button {
-        anchors.centerIn: parent
-        text: "Click me!"
-        onClicked: clientSocketHandler.connectToServer("ws://127.0.0.1:8585")
+    Loader {
+        id: mainLoader
+        anchors.fill: parent
+        source: "qrc:/ui/MainMenuScreen.qml"
     }
 }
