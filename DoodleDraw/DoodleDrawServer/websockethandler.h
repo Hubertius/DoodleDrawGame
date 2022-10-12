@@ -17,7 +17,7 @@ public:
     ~WebSocketHandler();
 
 signals:
-
+    void newMessageToProcess(QString messageToProcess);
 public slots:
     void onNewSocketConnection();
     void onTextMessageRecevied(QString messageReceived);

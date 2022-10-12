@@ -8,6 +8,11 @@ WebSocketHandler::WebSocketHandler(QObject *parent)
 
     connect(m_clientSocket, &QWebSocket::connected, this, &WebSocketHandler::onConnected);
     connect(m_clientSocket, &QWebSocket::textMessageReceived, this, &WebSocketHandler::onTextMessageReceived);
+
+    m_messageProcessorHandler = new MessageProcessorHandler(this);
+
+    connect(m_messageProcessorHandler, &MessageProcessorHandler::uniqueIDRegistration, this, &WebSocketHandler::registerID);
+
 }
 
 void WebSocketHandler::connectToServer(QString hostAddress)
@@ -16,15 +21,23 @@ void WebSocketHandler::connectToServer(QString hostAddress)
     m_clientSocket->open(hostAddress);
 }
 
+void WebSocketHandler::registerID(QString idToRegister)
+{
+    m_clientID = idToRegister;
+    qDebug() << "Unique client ID: " << m_clientID;
+}
+
 void WebSocketHandler::onConnected()
 {
    qDebug() << "Client App. Connection established.";
-   m_clientSocket->sendTextMessage("Hello World!");
+   m_clientSocket->sendTextMessage("type:createGame;payload:0");
+   //m_clientSocket->sendTextMessage("type:login;payload:0");
 }
 
 void WebSocketHandler::onTextMessageReceived(QString messageReceived)
 {
     qDebug() << "Client App. Received message: " << messageReceived;
+    m_messageProcessorHandler->processMessage(messageReceived);
 }
 
 WebSocketHandler::~WebSocketHandler()

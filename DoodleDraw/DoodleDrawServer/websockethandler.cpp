@@ -39,12 +39,15 @@ void WebSocketHandler::onNewSocketConnection()
 
     nextClient->setParent(this);
 
+    nextClient->sendTextMessage("type:uniqueID;payload:" + newClientId);
+
     m_clientsList[newClientId] = nextClient;
 }
 
 void WebSocketHandler::onTextMessageRecevied(QString messageReceived)
 {
     qDebug() << "Received new client message: " << messageReceived;
+    emit newMessageToProcess(messageReceived);
 }
 
 void WebSocketHandler::onSocketDisconnect()

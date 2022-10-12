@@ -33,6 +33,7 @@ Item {
         buttonTextPixelSize: 48
         width: 336
         height: 106
+        onButtonClicked: clientSocketHandler.connectToServer("ws://127.0.0.1:8585")
     }
 
     GameButton {
