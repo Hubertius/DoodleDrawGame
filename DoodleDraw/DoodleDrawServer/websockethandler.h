@@ -11,7 +11,7 @@ class WebSocketHandler : public QObject
     Q_OBJECT
 private:
     QWebSocketServer * m_socketServer;
-    QList<QWebSocket *> m_clientsList;
+    QMap<QString, QWebSocket  *> m_clientsList;
 public:
     explicit WebSocketHandler(QObject *parent = nullptr);
     ~WebSocketHandler();
