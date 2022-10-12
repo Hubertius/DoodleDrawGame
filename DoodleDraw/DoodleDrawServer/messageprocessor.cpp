@@ -40,13 +40,27 @@ void MessageProcessor::MessageProcessor::processClientMessage(QString messageFro
         if(separatedInfos.first().contains("sender:"))
         {
             QString senderID = separatedInfos.first().remove("sender:");
-            emit createGameRequest(senderID);
+            emit createGameLobbyRequest(senderID);
         }
 
     }
     else if(separatedInfos.first() == "type:joinGame")
     {
         qDebug() << "Join game request";
+        separatedInfos.pop_front();
+        QString lobbyID = QString();
+        QString senderID = QString();
+        if(separatedInfos.first().contains("payload:"))
+        {
+            lobbyID = separatedInfos.first().remove("payload:");
+            separatedInfos.pop_front();
+            if(separatedInfos.first().contains("sender:"))
+            {
+                senderID = separatedInfos.first().remove("sender:");
+                if(lobbyID != QString() && senderID != QString())
+                    emit joinGameLobbyRequest(lobbyID, senderID);
+            }
+        }
     }
     else if(separatedInfos.first() == "type:message")
     {

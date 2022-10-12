@@ -15,16 +15,19 @@ private:
     QMap<QString, QWebSocket  *> m_clientsList;
 public:
     explicit WebSocketHandler(QObject *parent = nullptr);
+
     ~WebSocketHandler();
 
 signals:
     void newMessageToProcess(QString messageToProcess);
+    void sendTextMessageToClient(QString message, QString clientID);
 public slots:
     void onNewClientSocketConnection();
     void onClientTextMessageReceived(QString clientMessageReceived);
+    void onClientSocketDisconnect();
+
     void onLoginCheckDataRequest(QString clientID, QString name, QString password);
     void onDatabaseTextMessageReceived(QString databaseMessageReceived);
-    void onClientSocketDisconnect();
 };
 
 #endif // WEBSOCKETHANDLER_H

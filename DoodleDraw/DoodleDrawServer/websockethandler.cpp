@@ -15,8 +15,14 @@ WebSocketHandler::WebSocketHandler(QObject *parent)
         qDebug() << "Server is running!";
     else
         qDebug() << "Server unable to start listening for connections";
-    connect(m_socketServer, &QWebSocketServer::newConnection, this, &WebSocketHandler::WebSocketHandler::onNewClientSocketConnection);
+    connect(m_socketServer, &QWebSocketServer::newConnection, this, &WebSocketHandler::onNewClientSocketConnection);
 
+}
+
+void WebSocketHandler::sendTextMessageToClient(QString message, QString clientID)
+{
+    if(m_clientsList.contains(clientID))
+        m_clientsList[clientID]->sendTextMessage(message);
 }
 
 WebSocketHandler::~WebSocketHandler()

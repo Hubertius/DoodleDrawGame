@@ -30,7 +30,7 @@ void WebSocketHandler::registerID(QString idToRegister)
 void WebSocketHandler::onConnected()
 {
    qDebug() << "Client App. Connection established.";
-   m_clientSocket->sendTextMessage("type:createGame;payload:0");
+   m_clientSocket->sendTextMessage("type:createGame;payload:0;sender:" + m_clientID);
    //m_clientSocket->sendTextMessage("type:login;payload:0");
 }
 

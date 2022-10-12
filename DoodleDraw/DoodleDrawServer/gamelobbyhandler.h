@@ -7,9 +7,10 @@ class GameLobbyHandler : public QObject
 {
     Q_OBJECT
 private:
-    QList<QString> m_gameClientsList;
+    QString m_gameLobbyID;
+    QList<QString> m_gameLobbyClientsList;
 public:
-    explicit GameLobbyHandler(QObject *parent = nullptr);
+    explicit GameLobbyHandler(QString gameID, QObject *parent = nullptr);
     void addClientID(QString clientID);
 
 signals:
