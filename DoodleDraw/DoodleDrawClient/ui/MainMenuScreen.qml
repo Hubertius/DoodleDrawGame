@@ -28,7 +28,7 @@ Item {
         buttonText: "Play"
         width: 336
         height: 106
-        onButtonClicked:  console.log("Button clicked!")
+        onButtonClicked:  mainLoader.source = "qrc:/ui/GameSelectScreen.qml"
     }
 
     GameButton {
