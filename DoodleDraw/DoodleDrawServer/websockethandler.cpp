@@ -6,12 +6,16 @@
 WebSocketHandler::WebSocketHandler(QObject *parent)
     : QObject{parent}
 {
+//    m_serverSocketToDatabase = new QWebSocket;
+//    connect(m_serverSocketToDatabase, &QWebSocket::connected, this, &WebSocketHandler::onConnected);
+//    connect(m_serverSocketToDatabase, &QWebSocket::textMessageReceived, this, &WebSocketHandler::onDatabaseTextMessageReceived);
+
     m_socketServer = new QWebSocketServer("DoodleDrawServer", QWebSocketServer::NonSecureMode, this);
     if(m_socketServer->listen(QHostAddress::Any, 8585))
         qDebug() << "Server is running!";
     else
         qDebug() << "Server unable to start listening for connections";
-    connect(m_socketServer, &QWebSocketServer::newConnection, this, &WebSocketHandler::onNewSocketConnection);
+    connect(m_socketServer, &QWebSocketServer::newConnection, this, &WebSocketHandler::WebSocketHandler::onNewClientSocketConnection);
 
 }
 
@@ -20,7 +24,7 @@ WebSocketHandler::~WebSocketHandler()
     m_socketServer->deleteLater();
 }
 
-void WebSocketHandler::onNewSocketConnection()
+void WebSocketHandler::WebSocketHandler::onNewClientSocketConnection()
 {
     qDebug() << "New client connected!";
     std::random_device rd;
@@ -34,8 +38,8 @@ void WebSocketHandler::onNewSocketConnection()
     }
     qDebug() << "New client ID: " << newClientId;
     auto nextClient = m_socketServer->nextPendingConnection();
-    connect(nextClient, &QWebSocket::textMessageReceived, this, &WebSocketHandler::onTextMessageRecevied);
-    connect(nextClient, &QWebSocket::disconnected, this, &WebSocketHandler::onSocketDisconnect);
+    connect(nextClient, &QWebSocket::textMessageReceived, this, &WebSocketHandler::WebSocketHandler::onClientTextMessageReceived);
+    connect(nextClient, &QWebSocket::disconnected, this, &WebSocketHandler::WebSocketHandler::onClientSocketDisconnect);
 
     nextClient->setParent(this);
 
@@ -44,13 +48,26 @@ void WebSocketHandler::onNewSocketConnection()
     m_clientsList[newClientId] = nextClient;
 }
 
-void WebSocketHandler::onTextMessageRecevied(QString messageReceived)
+void WebSocketHandler::WebSocketHandler::onClientTextMessageReceived(QString messageReceived)
 {
     qDebug() << "Received new client message: " << messageReceived;
     emit newMessageToProcess(messageReceived);
 }
 
-void WebSocketHandler::onSocketDisconnect()
+void WebSocketHandler::onLoginCheckDataRequest(QString clientID, QString name, QString password)
+{
+    // send text message to app with databases, which will be parsed in app with no-sql database
+    //clientID:5555;name:name;password:password
+}
+
+void WebSocketHandler::onDatabaseTextMessageReceived(QString databaseMessageReceived)
+{
+    //clientID:5555,authorized:yes/no
+    // if no -> client removed from list, disconnect signal to its client is send
+    // if yes -> everything ok and client is allowed to continue
+}
+
+void WebSocketHandler::WebSocketHandler::onClientSocketDisconnect()
 {
     auto clientToDisconnect = qobject_cast<QWebSocket *>(sender());
     if(clientToDisconnect)

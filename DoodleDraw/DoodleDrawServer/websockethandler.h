@@ -11,6 +11,7 @@ class WebSocketHandler : public QObject
     Q_OBJECT
 private:
     QWebSocketServer * m_socketServer;
+    QWebSocket * m_serverSocketToDatabase;
     QMap<QString, QWebSocket  *> m_clientsList;
 public:
     explicit WebSocketHandler(QObject *parent = nullptr);
@@ -19,9 +20,11 @@ public:
 signals:
     void newMessageToProcess(QString messageToProcess);
 public slots:
-    void onNewSocketConnection();
-    void onTextMessageRecevied(QString messageReceived);
-    void onSocketDisconnect();
+    void onNewClientSocketConnection();
+    void onClientTextMessageReceived(QString clientMessageReceived);
+    void onLoginCheckDataRequest(QString clientID, QString name, QString password);
+    void onDatabaseTextMessageReceived(QString databaseMessageReceived);
+    void onClientSocketDisconnect();
 };
 
 #endif // WEBSOCKETHANDLER_H

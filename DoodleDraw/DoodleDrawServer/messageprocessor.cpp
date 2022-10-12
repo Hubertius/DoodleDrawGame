@@ -7,7 +7,7 @@ MessageProcessor::MessageProcessor(QObject *parent)
 
 }
 
-void MessageProcessor::processMessage(QString messageFromClient)
+void MessageProcessor::MessageProcessor::processClientMessage(QString messageFromClient)
 {
     qDebug() << "Server App. Message to process: " << messageFromClient;
     //type:login;payload:0;sender:5555;user:....;password:...
@@ -18,10 +18,31 @@ void MessageProcessor::processMessage(QString messageFromClient)
     if(separatedInfos.first() == "type:login")
     {
         qDebug() << "Client login request";
+        separatedInfos.pop_front();
+        separatedInfos.pop_front();
+        if(separatedInfos.first().contains("sender:"))
+        {
+            QString clientID = separatedInfos.first().remove("sender:");
+            separatedInfos.pop_front();
+            if(separatedInfos.first().contains("user:") && separatedInfos.last().contains("password:"))
+            {
+                QString userName = separatedInfos.first().remove("user:");
+                QString userPassword = separatedInfos.last().remove("password:");
+                emit loginRequest(clientID, userName, userPassword);
+            }
+        }
     }
     else if(separatedInfos.first() == "type:createGame")
     {
         qDebug() << "Create game request";
+        separatedInfos.pop_front();
+        separatedInfos.pop_front();
+        if(separatedInfos.first().contains("sender:"))
+        {
+            QString senderID = separatedInfos.first().remove("sender:");
+            emit createGameRequest(senderID);
+        }
+
     }
     else if(separatedInfos.first() == "type:joinGame")
     {
