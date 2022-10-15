@@ -8,6 +8,11 @@ Window {
     visible: true
     title: qsTr("DoodleDrawClient")
 
+    Connections {
+        target: gameManager
+        onChangeOfGameLobby: mainLoader.source = "qrc:/ui/LobbyScreen.qml"
+    }
+
     Loader {
         id: mainLoader
         anchors.fill: parent

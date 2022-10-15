@@ -4,6 +4,6 @@
         <file>ui/MainMenuScreen.qml</file>
         <file>ui/GameButton.qml</file>
         <file>ui/GameSelectScreen.qml</file>
-        <file>ui/LobyScreen.qml</file>
+        <file>ui/LobbyScreen.qml</file>
     </qresource>
 </RCC>
