@@ -15,6 +15,7 @@ private:
 public:
     explicit WebSocketHandler(QObject *parent = nullptr);
     Q_INVOKABLE void connectToServer(QString hostAddress);
+    Q_INVOKABLE void createGameRequest();
     void registerID(QString idToRegister);
     ~WebSocketHandler();
 

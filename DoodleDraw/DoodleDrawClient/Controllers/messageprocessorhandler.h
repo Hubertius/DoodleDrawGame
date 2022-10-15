@@ -10,7 +10,8 @@ public:
     explicit MessageProcessorHandler(QObject *parent = nullptr);
     void processMessage(QString messageFromServer);
 signals:
-    void uniqueIDRegistration(QString idOfClient);
+    void newClientIdRegistration(QString idOfClient);
+    void newLobbyIdRegistration(QString lobbyID);
 };
 
 #endif // MESSAGEPROCESSORHANDLER_H
