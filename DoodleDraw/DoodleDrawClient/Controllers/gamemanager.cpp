@@ -4,15 +4,22 @@ GameManager::GameManager(QObject *parent)
     : QObject{parent}
     , m_roomLobbyCode{QString()}
     , m_clientID{QString()}
+    , m_lobbyClientsIDs(QStringList())
 {
     m_messageProcessHandler = new MessageProcessorHandler(this);
     connect(m_messageProcessHandler, &MessageProcessorHandler::newClientIdRegistration, this, &GameManager::registerClientID);
-    connect(m_messageProcessHandler, &MessageProcessorHandler::newLobbyIdRegistration, this, &GameManager::joinLobby);
+    connect(m_messageProcessHandler, &MessageProcessorHandler::newLobby, this, &GameManager::joinLobby);
+    connect(m_messageProcessHandler, &MessageProcessorHandler::updatedClientsList, this, &GameManager::setLobbyClientsIDs);
 }
 
 void GameManager::createGameRequest()
 {
     emit newMessageToSend("type:createGame;payload:0;sender:" + m_clientID);
+}
+
+void GameManager::joinLobbyRequest(QString lobbyToJoinID)
+{
+    emit newMessageToSend("type:joinGame;payload:" + lobbyToJoinID + ";sender:" + m_clientID);
 }
 
 QString GameManager::getRoomLobbyCode()
@@ -21,10 +28,27 @@ QString GameManager::getRoomLobbyCode()
     return m_roomLobbyCode;
 }
 
+QStringList GameManager::getLobbyClientsIDs()
+{
+    return m_lobbyClientsIDs;
+}
+
+void GameManager::setLobbyClientsIDs(QStringList newClientsOfLobbyList)
+{
+    if(m_lobbyClientsIDs != newClientsOfLobbyList)
+    {
+        m_lobbyClientsIDs = newClientsOfLobbyList;
+        emit lobbyClientsIDsChanged();
+    }
+}
+
 void GameManager::setRoomLobbyCode(QString lobbyCode)
 {
     if(m_roomLobbyCode != lobbyCode)
+    {
         m_roomLobbyCode = lobbyCode;
+        emit roomLobbyCodeChanged();
+    }
     qDebug() << "Client App (GameManager). Set Lobby code: " << lobbyCode;
 }
 
@@ -39,9 +63,10 @@ void GameManager::registerClientID(QString clientID)
     m_clientID = clientID;
 }
 
-void GameManager::joinLobby(QString lobbyCode)
+void GameManager::joinLobby(QString lobbyCode, QStringList clientsIDsList)
 {
     setRoomLobbyCode(lobbyCode);
+    setLobbyClientsIDs(clientsIDsList);
     emit changeOfGameLobby();
 }
 

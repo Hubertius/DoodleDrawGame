@@ -25,6 +25,14 @@ void WebSocketHandler::sendTextMessageToClient(QString message, QString clientID
         m_clientsList[clientID]->sendTextMessage(message);
 }
 
+void WebSocketHandler::sendTextMessageToMultipleClients(QString message, QStringList clientsIDsList)
+{
+    foreach(const QString & clientID, clientsIDsList)
+    {
+        sendTextMessageToClient(message, clientID);
+    }
+}
+
 WebSocketHandler::~WebSocketHandler()
 {
     m_socketServer->deleteLater();

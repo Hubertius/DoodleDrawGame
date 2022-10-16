@@ -13,6 +13,10 @@ public:
     explicit GameLobbyHandler(QString gameID, QObject *parent = nullptr);
     void addClientID(QString clientID);
 
+    QString getGameLobbyClientsAsString() const;
+    QList<QString> getGameLobbyClientsAsList() const;
+
+
 signals:
 
 };

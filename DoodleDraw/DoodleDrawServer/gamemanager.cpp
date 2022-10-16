@@ -34,7 +34,7 @@ void GameManager::createGameLobbyRequest(QString clientID)
     qDebug() << "New game lobby ID: " << newGameID;
     m_gameLobby->addClientID(clientID);
     m_gameLobbys[newGameID] = m_gameLobby;
-    m_webSocketHandler->sendTextMessageToClient("type:lobbyCreated;payload:" + newGameID, clientID);
+    m_webSocketHandler->sendTextMessageToClient("type:lobbyCreated;payload:" + newGameID +";clientsList:" + clientID, clientID);
 }
 
 void GameManager::joinGameLobbyRequest(QString lobbyID, QString clientID)
@@ -42,7 +42,8 @@ void GameManager::joinGameLobbyRequest(QString lobbyID, QString clientID)
     if(m_gameLobbys.contains(lobbyID))
     {
         m_gameLobbys[lobbyID]->addClientID(clientID);
-        m_webSocketHandler->sendTextMessageToClient("type:lobbyJoinSuccessful;payload:" + lobbyID, clientID);
+        m_webSocketHandler->sendTextMessageToClient("type:lobbyJoinSuccessful;payload:" + lobbyID + ";clientsList:" + m_gameLobbys[lobbyID]->getGameLobbyClientsAsString(), clientID);
+        m_webSocketHandler->sendTextMessageToMultipleClients("type:updatedClientsList;payload:" + m_gameLobbys[lobbyID]->getGameLobbyClientsAsString(), m_gameLobbys[lobbyID]->getGameLobbyClientsAsList());
     }
     else
         m_webSocketHandler->sendTextMessageToClient("type:lobbyJoinFailed:payload:" + lobbyID, clientID);

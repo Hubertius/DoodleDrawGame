@@ -35,6 +35,19 @@ Item {
         height: 415
     }
 
+    ListView {
+        id: roomLobbyList
+        model: gameManager.lobbyClientsIDs
+        delegate: Text {
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: modelData
+            font.pixelSize: 36
+            color: "white"
+            font.bold: true
+        }
+        anchors.fill: roomLobbyListBackground
+    }
+
     Rectangle {
         id: messageWindowBackground
         radius: 5
@@ -97,4 +110,5 @@ Item {
         color: "white"
         clip: true
     }
+
 }
