@@ -14,6 +14,7 @@ void MessageProcessorHandler::processMessage(QString messageFromServer)
     //type:lobbyJoinSuccessful;payload:1111
     //type:lobbyJoinFailed;payload:1111
     //type:updatedClientsList;payload:
+    //type:message;payload:HelloWorld;sender:5555
     QStringList separatedInfos = messageFromServer.split(";");
     if(separatedInfos.first() == "type:uniqueID")
     {
@@ -60,6 +61,24 @@ void MessageProcessorHandler::processMessage(QString messageFromServer)
         qDebug() << "Client App. Updated info list of clients for lobby: " << updatedLobbyClients;
         emit updatedClientsList(updatedLobbyClients);
 
+    }
+    else if(separatedInfos.first().contains("type:message"))
+    {
+        //type:message;payload:HelloWorld;sender:5555
+        separatedInfos.pop_front();
+        QString message = QString();
+        QString senderID = QString();
+        if(separatedInfos.first().contains("payload:"))
+        {
+            message = separatedInfos.first().remove("payload:");
+            qDebug() << "Client App. Message received to display: " << message;
+            separatedInfos.pop_front();
+            if(separatedInfos.first().contains("sender:"))
+            {
+               senderID = separatedInfos.first().remove("sender:");
+               emit newMessageForLobby(senderID + ": " + message);
+            }
+        }
     }
 
 

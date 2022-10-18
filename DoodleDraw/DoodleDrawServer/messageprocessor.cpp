@@ -13,7 +13,7 @@ void MessageProcessor::MessageProcessor::processClientMessage(QString messageFro
     //type:login;payload:0;sender:5555;user:....;password:...
     //type:createGame;payload:0;sender:5555
     //type:joinGame;payload:4000;sender:5555 -> payload as game code
-    //type:message;payload:HelloWorld;sender:5555
+    //type:message;payload:HelloWorld;lobbyID:9999;sender:5555
     QStringList separatedInfos = messageFromClient.split(";");
     if(separatedInfos.first() == "type:login")
     {
@@ -64,7 +64,34 @@ void MessageProcessor::MessageProcessor::processClientMessage(QString messageFro
     }
     else if(separatedInfos.first() == "type:message")
     {
-        qDebug() << "Message request";
+        // message to lobby
+        //type:message;payload:HelloWorld;lobbyID:9999;sender:5555
+        qDebug() << "Server App. Lobby Message request";
+        separatedInfos.pop_front();
+        QString messageContent = QString();
+        QString lobbyID = QString();
+        QString senderID = QString();
+        if(separatedInfos.first().contains("payload:"))
+        {
+            messageContent = separatedInfos.first().remove("payload:");
+            separatedInfos.pop_front();
+            if(separatedInfos.first().contains("lobbyID:"))
+            {
+                lobbyID = separatedInfos.first().remove("lobbyID:");
+                separatedInfos.pop_front();
+                if(separatedInfos.first().contains("sender:"))
+                {
+                    senderID = separatedInfos.first().remove("sender:");
+                    if(messageContent != QString() && lobbyID != QString() && senderID != QString())
+                    {
+                        qDebug() << "Server App. Before emiting message lobby request";
+                        emit messageLobbyRequest(messageContent, lobbyID, senderID);
+                    }
+                }
+            }
+        }
+
+
     }
 
 }

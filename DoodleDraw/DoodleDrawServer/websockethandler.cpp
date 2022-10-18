@@ -3,6 +3,11 @@
 #include <random>
 #include <QRandomGenerator>
 
+const QMap<QString, QWebSocket *> &WebSocketHandler::getClientsList() const
+{
+    return m_clientsList;
+}
+
 WebSocketHandler::WebSocketHandler(QObject *parent)
     : QObject{parent}
 {

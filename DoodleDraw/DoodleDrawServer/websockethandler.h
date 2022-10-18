@@ -19,6 +19,8 @@ public:
     void sendTextMessageToMultipleClients(QString message, QStringList clientsIDsList);
     ~WebSocketHandler();
 
+    const QMap<QString, QWebSocket *> &getClientsList() const;
+
 signals:
     void newMessageToProcess(QString messageToProcess);
 public slots:

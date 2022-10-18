@@ -13,6 +13,7 @@ signals:
     void newClientIdRegistration(QString idOfClient);
     void newLobby(QString lobbyID, QStringList clients);
     void updatedClientsList(QStringList updatedClientsIDs);
+    void newMessageForLobby(QString messageForDisplay);
 };
 
 #endif // MESSAGEPROCESSORHANDLER_H

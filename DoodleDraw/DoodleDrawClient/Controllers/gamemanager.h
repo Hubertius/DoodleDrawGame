@@ -19,6 +19,7 @@ public:
     explicit GameManager(QObject *parent = nullptr);
     Q_INVOKABLE void createGameRequest();
     Q_INVOKABLE void joinLobbyRequest(QString lobbyToJoinID);
+    Q_INVOKABLE void sendMessageToLobby(QString messageToSend);
     ~GameManager();
     QString getRoomLobbyCode();
     QStringList getLobbyClientsIDs();
@@ -28,6 +29,7 @@ signals:
     void newMessageToSend(QString messageToSend);
     void changeOfGameLobby();
     void lobbyClientsIDsChanged();
+    void newMessageForLobby(QString messageForDisplaying);
 
 public slots:
     void setRoomLobbyCode(QString lobbyCode);

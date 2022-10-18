@@ -10,6 +10,7 @@ GameManager::GameManager(QObject *parent)
     connect(m_messageProcessHandler, &MessageProcessorHandler::newClientIdRegistration, this, &GameManager::registerClientID);
     connect(m_messageProcessHandler, &MessageProcessorHandler::newLobby, this, &GameManager::joinLobby);
     connect(m_messageProcessHandler, &MessageProcessorHandler::updatedClientsList, this, &GameManager::setLobbyClientsIDs);
+    connect(m_messageProcessHandler, &MessageProcessorHandler::newMessageForLobby, this, &GameManager::newMessageForLobby);
 }
 
 void GameManager::createGameRequest()
@@ -20,6 +21,12 @@ void GameManager::createGameRequest()
 void GameManager::joinLobbyRequest(QString lobbyToJoinID)
 {
     emit newMessageToSend("type:joinGame;payload:" + lobbyToJoinID + ";sender:" + m_clientID);
+}
+
+void GameManager::sendMessageToLobby(QString messageToSend)
+{
+    qDebug() << "Message to send for server (m_roomLobbyCode): " << m_roomLobbyCode;
+    emit newMessageToSend("type:message;payload:"+ messageToSend + ";lobbyID:" + m_roomLobbyCode + ";sender:" + m_clientID);
 }
 
 QString GameManager::getRoomLobbyCode()

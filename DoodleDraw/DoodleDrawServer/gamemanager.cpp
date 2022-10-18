@@ -1,4 +1,5 @@
 #include "gamemanager.h"
+#include "gamelobbyhandler.h"
 #include <random>
 #include <QRandomGenerator>
 
@@ -12,6 +13,7 @@ GameManager::GameManager(QObject *parent)
 
     connect(m_messageProcessHandler, &MessageProcessor::createGameLobbyRequest, this, &GameManager::createGameLobbyRequest);
     connect(m_messageProcessHandler, &MessageProcessor::joinGameLobbyRequest, this, &GameManager::joinGameLobbyRequest);
+    connect(m_messageProcessHandler, &MessageProcessor::messageLobbyRequest, this, &GameManager::messageLobbyRequest);
 }
 
 GameManager::~GameManager()
@@ -47,4 +49,15 @@ void GameManager::joinGameLobbyRequest(QString lobbyID, QString clientID)
     }
     else
         m_webSocketHandler->sendTextMessageToClient("type:lobbyJoinFailed:payload:" + lobbyID, clientID);
+}
+
+void GameManager::messageLobbyRequest(QString messageContent, QString lobbyID, QString clientID)
+{
+    if(m_gameLobbys.contains(lobbyID) )
+    {
+        qDebug()  << "Server App. Message Lobby Request slot in GameManager";
+        GameLobbyHandler * lobby = m_gameLobbys[lobbyID];
+        qDebug() << "Server App. Message Lobby Request and message content: " << messageContent;
+        m_webSocketHandler->sendTextMessageToMultipleClients("type:message;payload:" + messageContent + ";sender:" + clientID, lobby->getGameLobbyClientsAsList());
+    }
 }
