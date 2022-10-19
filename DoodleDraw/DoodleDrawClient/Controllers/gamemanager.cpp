@@ -5,12 +5,14 @@ GameManager::GameManager(QObject *parent)
     , m_roomLobbyCode{QString()}
     , m_clientID{QString()}
     , m_lobbyClientsIDs(QStringList())
+    , m_clientsReadineesList(QStringList())
 {
     m_messageProcessHandler = new MessageProcessorHandler(this);
     connect(m_messageProcessHandler, &MessageProcessorHandler::newClientIdRegistration, this, &GameManager::registerClientID);
     connect(m_messageProcessHandler, &MessageProcessorHandler::newLobby, this, &GameManager::joinLobby);
     connect(m_messageProcessHandler, &MessageProcessorHandler::updatedClientsList, this, &GameManager::setLobbyClientsIDs);
     connect(m_messageProcessHandler, &MessageProcessorHandler::newMessageForLobby, this, &GameManager::newMessageForLobby);
+    connect(m_messageProcessHandler, &MessageProcessorHandler::newClientsReadyList, this, &GameManager::newClientsReadyList);
 }
 
 void GameManager::createGameRequest()
@@ -27,6 +29,16 @@ void GameManager::sendMessageToLobby(QString messageToSend)
 {
     qDebug() << "Message to send for server (m_roomLobbyCode): " << m_roomLobbyCode;
     emit newMessageToSend("type:message;payload:"+ messageToSend + ";lobbyID:" + m_roomLobbyCode + ";sender:" + m_clientID);
+}
+
+bool GameManager::isClientReady(QString clientID)
+{
+    return m_clientsReadineesList.contains(clientID);
+}
+
+void GameManager::readyToPlay()
+{
+    emit newMessageToSend("type:readyToPlay;payload:1;sender:" + m_clientID);
 }
 
 QString GameManager::getRoomLobbyCode()
@@ -75,6 +87,15 @@ void GameManager::joinLobby(QString lobbyCode, QStringList clientsIDsList)
     setRoomLobbyCode(lobbyCode);
     setLobbyClientsIDs(clientsIDsList);
     emit changeOfGameLobby();
+}
+
+void GameManager::newClientsReadyList(QStringList clientsListReadinees)
+{
+    if(m_clientsReadineesList != clientsListReadinees)
+    {
+        m_clientsReadineesList = clientsListReadinees;
+        emit updatedClientsListReadinees();
+    }
 }
 
 GameManager::~GameManager()

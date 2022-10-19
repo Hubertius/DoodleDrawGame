@@ -14,6 +14,7 @@ GameManager::GameManager(QObject *parent)
     connect(m_messageProcessHandler, &MessageProcessor::createGameLobbyRequest, this, &GameManager::createGameLobbyRequest);
     connect(m_messageProcessHandler, &MessageProcessor::joinGameLobbyRequest, this, &GameManager::joinGameLobbyRequest);
     connect(m_messageProcessHandler, &MessageProcessor::messageLobbyRequest, this, &GameManager::messageLobbyRequest);
+    connect(m_messageProcessHandler, &MessageProcessor::userReadyToPlay, this, &GameManager::userReadyToPlay);
 }
 
 GameManager::~GameManager()
@@ -33,6 +34,7 @@ void GameManager::createGameLobbyRequest(QString clientID)
         newGameID = QString::number(idGenerator(*QRandomGenerator::global()));
     }
     GameLobbyHandler * m_gameLobby = new GameLobbyHandler(newGameID, this);
+    connect(m_gameLobby, &GameLobbyHandler::usersReadineesChanged, this, &GameManager::usersReadineesChanged);
     qDebug() << "New game lobby ID: " << newGameID;
     m_gameLobby->addClientID(clientID);
     m_gameLobbys[newGameID] = m_gameLobby;
@@ -60,4 +62,17 @@ void GameManager::messageLobbyRequest(QString messageContent, QString lobbyID, Q
         qDebug() << "Server App. Message Lobby Request and message content: " << messageContent;
         m_webSocketHandler->sendTextMessageToMultipleClients("type:message;payload:" + messageContent + ";sender:" + clientID, lobby->getGameLobbyClientsAsList());
     }
+}
+
+void GameManager::usersReadineesChanged()
+{
+    GameLobbyHandler * gameLobby = qobject_cast<GameLobbyHandler *>(sender());
+    m_webSocketHandler->sendTextMessageToMultipleClients("type:readineesOfClientsChanged;payload:" + gameLobby->getTrueReadineesOfClients(), gameLobby->getGameLobbyClientsAsList());
+}
+
+void GameManager::userReadyToPlay(QString clientID)
+{
+    qDebug() << "Server App. User ready: " << clientID;
+    foreach(GameLobbyHandler * gameLobby, m_gameLobbys.values())
+        gameLobby->userReadyToPlay(clientID);
 }

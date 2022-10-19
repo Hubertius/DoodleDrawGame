@@ -13,6 +13,7 @@ private:
     QString m_roomLobbyCode;
     QString m_clientID;
     QStringList m_lobbyClientsIDs;
+    QStringList m_clientsReadineesList;
     MessageProcessorHandler * m_messageProcessHandler;
 
 public:
@@ -20,6 +21,8 @@ public:
     Q_INVOKABLE void createGameRequest();
     Q_INVOKABLE void joinLobbyRequest(QString lobbyToJoinID);
     Q_INVOKABLE void sendMessageToLobby(QString messageToSend);
+    Q_INVOKABLE bool isClientReady(QString clientID);
+    Q_INVOKABLE void readyToPlay();
     ~GameManager();
     QString getRoomLobbyCode();
     QStringList getLobbyClientsIDs();
@@ -30,6 +33,7 @@ signals:
     void changeOfGameLobby();
     void lobbyClientsIDsChanged();
     void newMessageForLobby(QString messageForDisplaying);
+    void updatedClientsListReadinees();
 
 public slots:
     void setRoomLobbyCode(QString lobbyCode);
@@ -38,6 +42,7 @@ public slots:
 
     void registerClientID(QString clientID);
     void joinLobby(QString lobbyCode, QStringList clientsIDsList);
+    void newClientsReadyList(QStringList updatedClientsListReadinees);
 };
 
 #endif // GAMEMANAGER_H

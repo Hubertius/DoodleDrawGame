@@ -14,6 +14,7 @@ signals:
     void newLobby(QString lobbyID, QStringList clients);
     void updatedClientsList(QStringList updatedClientsIDs);
     void newMessageForLobby(QString messageForDisplay);
+    void newClientsReadyList(QStringList readyClientsList);
 };
 
 #endif // MESSAGEPROCESSORHANDLER_H

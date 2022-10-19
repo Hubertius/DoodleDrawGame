@@ -14,6 +14,7 @@ void MessageProcessor::MessageProcessor::processClientMessage(QString messageFro
     //type:createGame;payload:0;sender:5555
     //type:joinGame;payload:4000;sender:5555 -> payload as game code
     //type:message;payload:HelloWorld;lobbyID:9999;sender:5555
+    //type:readyToPlay;payload:1;sender:5555
     QStringList separatedInfos = messageFromClient.split(";");
     if(separatedInfos.first() == "type:login")
     {
@@ -90,8 +91,16 @@ void MessageProcessor::MessageProcessor::processClientMessage(QString messageFro
                 }
             }
         }
-
-
+    }
+    else if(separatedInfos.first() == "type:readyToPlay")
+    {
+        qDebug() << "Server App. Client declared readinees in lobby";
+        if(separatedInfos.back().contains("sender:"))
+        {
+            QString clientID = separatedInfos.back().remove("sender:");
+            qDebug() << "Server App. Client declared readinees, his ID: " << clientID;
+            emit userReadyToPlay(clientID);
+        }
     }
 
 }

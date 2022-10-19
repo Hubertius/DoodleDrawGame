@@ -15,6 +15,7 @@ void MessageProcessorHandler::processMessage(QString messageFromServer)
     //type:lobbyJoinFailed;payload:1111
     //type:updatedClientsList;payload:
     //type:message;payload:HelloWorld;sender:5555
+    //type:readineesOfClientsChanged;payload:1234,4444
     QStringList separatedInfos = messageFromServer.split(";");
     if(separatedInfos.first() == "type:uniqueID")
     {
@@ -79,6 +80,20 @@ void MessageProcessorHandler::processMessage(QString messageFromServer)
                emit newMessageForLobby(senderID + ": " + message);
             }
         }
+    }
+    else if(separatedInfos.first().contains("type:readineesOfClientsChanged"))
+    {
+         separatedInfos.pop_front();
+         QString clientsReady = QString();
+         if(separatedInfos.first().contains("payload:"))
+         {
+             clientsReady = separatedInfos.first().remove("payload:");
+             if(clientsReady != QString())
+             {
+                QStringList clientsReadyList = clientsReady.split(",");
+                emit newClientsReadyList(clientsReadyList);
+             }
+         }
     }
 
 
