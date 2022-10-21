@@ -15,6 +15,7 @@ signals:
     void updatedClientsList(QStringList updatedClientsIDs);
     void newMessageForLobby(QString messageForDisplay);
     void newClientsReadyList(QStringList readyClientsList);
+    void newGameBegins();
 };
 
 #endif // MESSAGEPROCESSORHANDLER_H

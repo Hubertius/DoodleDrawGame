@@ -23,6 +23,7 @@ public slots:
     void messageLobbyRequest(QString messageContent, QString lobbyID, QString clientID);
     void usersReadineesChanged();
     void userReadyToPlay(QString clientID);
+    void gameReadyToBegin();
 signals:
 
 };

@@ -11,11 +11,9 @@ GameLobbyHandler::GameLobbyHandler(QString gameID, QObject *parent)
 void GameLobbyHandler::addClientID(QString clientID)
 {
     if(!m_gameLobbyClientsList.contains(clientID))
-        m_gameLobbyClientsList.append(clientID);
-    m_clientsReadiness.clear();
-    foreach(const QString & client, m_gameLobbyClientsList)
     {
-        m_clientsReadiness[client] = false;
+        m_gameLobbyClientsList.append(clientID);
+        m_clientsReadiness[clientID] = false;
     }
     emit usersReadineesChanged();
 }
@@ -26,7 +24,17 @@ void GameLobbyHandler::userReadyToPlay(QString clientID)
     {
         m_clientsReadiness[clientID] = true;
         emit usersReadineesChanged();
+
     }
+    bool notAllReady = false;
+    foreach(const QString & clientID, m_clientsReadiness.keys())
+    {
+        if(!m_clientsReadiness[clientID])
+            notAllReady = true;
+    }
+
+    if(!notAllReady)
+        emit gameReadyToBegin();
 }
 
 QString GameLobbyHandler::getGameLobbyClientsAsString() const

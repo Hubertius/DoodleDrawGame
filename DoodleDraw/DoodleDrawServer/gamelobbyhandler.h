@@ -22,6 +22,7 @@ public:
 
 signals:
     void usersReadineesChanged();
+    void gameReadyToBegin();
 };
 
 #endif // GAMELOBBYHANDLER_H

@@ -16,6 +16,7 @@ void MessageProcessorHandler::processMessage(QString messageFromServer)
     //type:updatedClientsList;payload:
     //type:message;payload:HelloWorld;sender:5555
     //type:readineesOfClientsChanged;payload:1234,4444
+    //type:gameReadyToBegin;payload:1
     QStringList separatedInfos = messageFromServer.split(";");
     if(separatedInfos.first() == "type:uniqueID")
     {
@@ -95,6 +96,9 @@ void MessageProcessorHandler::processMessage(QString messageFromServer)
              }
          }
     }
-
+    else if(separatedInfos.first().contains("type:gameReadyToBegin"))
+    {
+        emit newGameBegins();
+    }
 
 }

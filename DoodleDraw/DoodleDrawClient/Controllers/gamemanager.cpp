@@ -13,6 +13,7 @@ GameManager::GameManager(QObject *parent)
     connect(m_messageProcessHandler, &MessageProcessorHandler::updatedClientsList, this, &GameManager::setLobbyClientsIDs);
     connect(m_messageProcessHandler, &MessageProcessorHandler::newMessageForLobby, this, &GameManager::newMessageForLobby);
     connect(m_messageProcessHandler, &MessageProcessorHandler::newClientsReadyList, this, &GameManager::newClientsReadyList);
+    connect(m_messageProcessHandler, &MessageProcessorHandler::newGameBegins, this, &GameManager::newGameBegins);
 }
 
 void GameManager::createGameRequest()

@@ -34,6 +34,7 @@ signals:
     void lobbyClientsIDsChanged();
     void newMessageForLobby(QString messageForDisplaying);
     void updatedClientsListReadinees();
+    void newGameBegins();
 
 public slots:
     void setRoomLobbyCode(QString lobbyCode);

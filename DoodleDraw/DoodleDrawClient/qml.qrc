@@ -7,5 +7,6 @@
         <file>ui/LobbyScreen.qml</file>
         <file>ui/JoinLobbyScreen.qml</file>
         <file>ui/assets/check.png</file>
+        <file>ui/DoodleScreen.qml</file>
     </qresource>
 </RCC>
