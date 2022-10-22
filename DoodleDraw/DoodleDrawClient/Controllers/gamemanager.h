@@ -9,11 +9,13 @@ class GameManager : public QObject
     Q_OBJECT
     Q_PROPERTY(QString roomLobbyCode READ getRoomLobbyCode WRITE setRoomLobbyCode NOTIFY roomLobbyCodeChanged)
     Q_PROPERTY(QStringList lobbyClientsIDs READ getLobbyClientsIDs WRITE setLobbyClientsIDs NOTIFY lobbyClientsIDsChanged)
+    Q_PROPERTY(QString drawingInstruction READ getDrawingInstruction WRITE setDrawingInstruction NOTIFY newDrawingInstruction)
 private:
     QString m_roomLobbyCode;
     QString m_clientID;
     QStringList m_lobbyClientsIDs;
     QStringList m_clientsReadineesList;
+    QString m_drawingInstruction;
     MessageProcessorHandler * m_messageProcessHandler;
 
 public:
@@ -27,24 +29,28 @@ public:
     ~GameManager();
     QString getRoomLobbyCode();
     QStringList getLobbyClientsIDs();
+    QString getDrawingInstruction();
 
 signals:
     void roomLobbyCodeChanged();
     void newMessageToSend(QString messageToSend);
     void changeOfGameLobby();
     void lobbyClientsIDsChanged();
+    void newDrawingInstruction();
     void newMessageForLobby(QString messageForDisplaying);
     void updatedClientsListReadinees();
     void newGameBegins();
+    void clientAddDrawStarted();
 
 public slots:
     void setRoomLobbyCode(QString lobbyCode);
     void setLobbyClientsIDs(QStringList newClientsOfLobbyList);
+    void setDrawingInstruction(QString drawOrder);
     void processSocketMessage(QString message);
-
     void registerClientID(QString clientID);
     void joinLobby(QString lobbyCode, QStringList clientsIDsList);
     void newClientsReadyList(QStringList updatedClientsListReadinees);
+    void onClientReceivedDrawForContinuation(QString imageFileData, QString drawOrder);
 };
 
 #endif // GAMEMANAGER_H

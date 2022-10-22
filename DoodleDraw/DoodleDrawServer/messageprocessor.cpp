@@ -103,7 +103,7 @@ void MessageProcessor::MessageProcessor::processClientMessage(QString messageFro
             emit userReadyToPlay(clientID);
         }
     }
-    else if(separatedInfos.first() == "type:doodleDraw")
+    else if(separatedInfos.first() == "type:doodleDrawData")
     {
         QString fileData = QString();
         QString clientID = QString();
@@ -114,7 +114,7 @@ void MessageProcessor::MessageProcessor::processClientMessage(QString messageFro
             separatedInfos.pop_front();
             if(separatedInfos.first().contains("sender:"))
             {
-                clientID = separatedInfos.first();
+                clientID = separatedInfos.first().remove("sender:");
                 if(fileData != QString() && clientID != QString())
                     emit clientNewDoodleDrawing(fileData, clientID);
             }

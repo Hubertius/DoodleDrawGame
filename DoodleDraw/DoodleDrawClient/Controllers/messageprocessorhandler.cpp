@@ -17,6 +17,7 @@ void MessageProcessorHandler::processMessage(QString messageFromServer)
     //type:message;payload:HelloWorld;sender:5555
     //type:readineesOfClientsChanged;payload:1234,4444
     //type:gameReadyToBegin;payload:1
+    //type:assignedDrawingData;payload:distrubutedDraws[clientID];drawOrder:drawingChosenForClients
     QStringList separatedInfos = messageFromServer.split(";");
     if(separatedInfos.first() == "type:uniqueID")
     {
@@ -99,6 +100,24 @@ void MessageProcessorHandler::processMessage(QString messageFromServer)
     else if(separatedInfos.first().contains("type:gameReadyToBegin"))
     {
         emit newGameBegins();
+    }
+    else if(separatedInfos.first().contains("type:assignedDrawingData"))
+    {
+        qDebug() << "Client App. Received image file data for client for drawing with instruction what to draw.";
+        separatedInfos.pop_front();
+        QString imageForDrawingData = QString();
+        QString drawOrder = QString();
+        if(separatedInfos.first().contains("payload:"))
+        {
+            imageForDrawingData = separatedInfos.first().remove("payload");
+            separatedInfos.pop_front();
+            if(separatedInfos.first().contains("drawOrder:"))
+            {
+                drawOrder = separatedInfos.first().remove("drawOrder:");
+                if(imageForDrawingData != QString() && drawOrder != QString())
+                    emit clientReceivedDrawForContinuation(imageForDrawingData, drawOrder);
+            }
+        }
     }
 
 }

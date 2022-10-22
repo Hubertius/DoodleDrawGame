@@ -1,6 +1,7 @@
 #include "gamemanager.h"
 #include <QDebug>
 #include <QFile>
+#include <QDir>
 
 GameManager::GameManager(QObject *parent)
     : QObject{parent}
@@ -8,6 +9,7 @@ GameManager::GameManager(QObject *parent)
     , m_clientID{QString()}
     , m_lobbyClientsIDs(QStringList())
     , m_clientsReadineesList(QStringList())
+    , m_drawingInstruction(QString())
 {
     m_messageProcessHandler = new MessageProcessorHandler(this);
     connect(m_messageProcessHandler, &MessageProcessorHandler::newClientIdRegistration, this, &GameManager::registerClientID);
@@ -16,6 +18,7 @@ GameManager::GameManager(QObject *parent)
     connect(m_messageProcessHandler, &MessageProcessorHandler::newMessageForLobby, this, &GameManager::newMessageForLobby);
     connect(m_messageProcessHandler, &MessageProcessorHandler::newClientsReadyList, this, &GameManager::newClientsReadyList);
     connect(m_messageProcessHandler, &MessageProcessorHandler::newGameBegins, this, &GameManager::newGameBegins);
+    connect(m_messageProcessHandler, &MessageProcessorHandler::clientReceivedDrawForContinuation, this, &GameManager::onClientReceivedDrawForContinuation);
 }
 
 void GameManager::createGameRequest()
@@ -49,14 +52,14 @@ void GameManager::doodleDone()
     // opening image file done by client
     // loading it into QByteArray
     // send data to server
-    QFile clientImageFIle("tmp.png");
+    QFile clientImageFIle(QDir::currentPath() + "/../../DoodleDraw/DoodleDrawClient/ui/tmp.png");
     if(!clientImageFIle.open(QIODevice::ReadOnly))
         return;
     QByteArray imageContent = clientImageFIle.readAll();
     clientImageFIle.close();
 
-    //type:doodleData;payload:imageContent;sender:clientID
-    emit newMessageToSend("type:doodleData;payload:" + imageContent.toHex() + ";sender:" + m_clientID);
+    //type:doodleDrawData;payload:imageContent;sender:clientID
+    emit newMessageToSend("type:doodleDrawData;payload:" + imageContent.toHex() + ";sender:" + m_clientID);
 }
 
 QString GameManager::getRoomLobbyCode()
@@ -68,6 +71,11 @@ QString GameManager::getRoomLobbyCode()
 QStringList GameManager::getLobbyClientsIDs()
 {
     return m_lobbyClientsIDs;
+}
+
+QString GameManager::getDrawingInstruction()
+{
+    return m_drawingInstruction;
 }
 
 void GameManager::setLobbyClientsIDs(QStringList newClientsOfLobbyList)
@@ -94,6 +102,12 @@ void GameManager::processSocketMessage(QString message)
     m_messageProcessHandler->processMessage(message);
 }
 
+void GameManager::setDrawingInstruction(QString drawOrder)
+{
+    m_drawingInstruction = drawOrder;
+    emit newDrawingInstruction();
+}
+
 void GameManager::registerClientID(QString clientID)
 {
     qDebug() << "Client App. Registering client id";
@@ -114,6 +128,20 @@ void GameManager::newClientsReadyList(QStringList clientsListReadinees)
         m_clientsReadineesList = clientsListReadinees;
         emit updatedClientsListReadinees();
     }
+}
+
+void GameManager::onClientReceivedDrawForContinuation(QString imageFileData, QString drawOrder)
+{
+    qDebug() << "OVER HERE!";
+    setDrawingInstruction(drawOrder);
+    qDebug() << QDir::currentPath() + "/../../DoodleDraw/DoodleDrawClient/ui/" + m_clientID + ".png";
+    QFile tmpImage(QDir::currentPath() + "/../../DoodleDraw/DoodleDrawClient/ui/" + m_clientID + ".png");
+    if(!tmpImage.open(QIODevice::WriteOnly))
+        return;
+    QByteArray byteData = QByteArray::fromHex(imageFileData.toLocal8Bit());
+    tmpImage.write(byteData);
+    tmpImage.flush();
+    tmpImage.close();
 }
 
 GameManager::~GameManager()
