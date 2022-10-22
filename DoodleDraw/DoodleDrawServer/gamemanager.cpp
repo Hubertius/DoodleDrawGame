@@ -6,6 +6,7 @@
 GameManager::GameManager(QObject *parent)
     : QObject{parent}
 {
+    m_drawingTypes = QStringList() << "dog" << "cat" << "mouse" << "rhino" << "elephant";
     m_webSocketHandler = new WebSocketHandler(this);
     m_messageProcessHandler = new MessageProcessor(this);
     connect(m_webSocketHandler, &WebSocketHandler::newMessageToProcess, m_messageProcessHandler, &MessageProcessor::processClientMessage);
@@ -16,6 +17,16 @@ GameManager::GameManager(QObject *parent)
     connect(m_messageProcessHandler, &MessageProcessor::messageLobbyRequest, this, &GameManager::messageLobbyRequest);
     connect(m_messageProcessHandler, &MessageProcessor::userReadyToPlay, this, &GameManager::userReadyToPlay);
     connect(m_messageProcessHandler, &MessageProcessor::clientNewDoodleDrawing, this, &GameManager::onClientNewDoodleDrawing);
+
+}
+
+const QString& GameManager::generateSthForDrawing()
+{
+    std::random_device rd;
+
+    std::uniform_int_distribution<int> indexGenerator(0, m_drawingTypes.size()-1);
+    int generatedIndex = indexGenerator(*QRandomGenerator::global());
+    return m_drawingTypes.at(generatedIndex);
 }
 
 GameManager::~GameManager()
@@ -93,7 +104,12 @@ void GameManager::onClientNewDoodleDrawing(QString fileData, QString clientID)
         gameLobby->clientNewDoodleDraw(fileData, clientID);
 }
 
-void GameManager::onAllClientsSendDoodleDraws()
+void GameManager::onAllClientsSendDoodleDraws(QMap<QString, QString> distrubutedDraws)
 {
+    const QString& drawingChosenForClients =  this->generateSthForDrawing();
+    //type:assignedDrawing;payload:distrubutedDraws;instructionForDrawing:Cat
+    foreach(const QString& clientID, distrubutedDraws.keys())
+        m_webSocketHandler->sendTextMessageToClient("type:assignedDrawingData;payload:" + distrubutedDraws[clientID] + ";drawOrder:" + drawingChosenForClients, clientID);
+
 
 }

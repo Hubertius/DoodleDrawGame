@@ -46,7 +46,22 @@ void GameLobbyHandler::clientNewDoodleDraw(QString fileData, QString clientID)
     }
     QList<QString> m_doodleDrawsClientsIDs = m_clientsDoodlesData.keys();
     if(m_doodleDrawsClientsIDs.size() == m_gameLobbyClientsList.size())
-        emit allClientsSendDoodleDraws();
+    {
+        QMap<QString, QString> distrubutedDraws;
+        for(int index = 0; index < m_doodleDrawsClientsIDs.size(); ++index)
+        {
+            QString client = m_doodleDrawsClientsIDs.at(index);
+            QString doodle;
+
+            if(index == m_doodleDrawsClientsIDs.size() - 1)
+                doodle = m_clientsDoodlesData[m_gameLobbyClientsList.at(0)];
+            else
+                doodle = m_clientsDoodlesData[m_gameLobbyClientsList.at(index+1)];
+            distrubutedDraws[client] = doodle;
+        }
+        emit allClientsSendDoodleDraws(distrubutedDraws);
+
+    }
 }
 
 QString GameLobbyHandler::getGameLobbyClientsAsString() const

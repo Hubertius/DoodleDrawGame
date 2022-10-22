@@ -25,7 +25,7 @@ public:
 signals:
     void usersReadineesChanged();
     void gameReadyToBegin();
-    void allClientsSendDoodleDraws();
+    void allClientsSendDoodleDraws(QMap<QString, QString> distrubutedDraws);
 };
 
 #endif // GAMELOBBYHANDLER_H

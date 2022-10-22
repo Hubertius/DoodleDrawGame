@@ -14,8 +14,10 @@ private:
     MessageProcessor * m_messageProcessHandler;
 private:
     QMap<QString, GameLobbyHandler *> m_gameLobbys;
+    QStringList m_drawingTypes;
 public:
     explicit GameManager(QObject *parent = nullptr);
+    const QString& generateSthForDrawing();
     ~GameManager();
 public slots:
     void createGameLobbyRequest(QString clientID);
@@ -25,7 +27,7 @@ public slots:
     void userReadyToPlay(QString clientID);
     void gameReadyToBegin();
     void onClientNewDoodleDrawing(QString fileData, QString clientID);
-    void onAllClientsSendDoodleDraws();
+    void onAllClientsSendDoodleDraws(QMap<QString, QString> distrubutedDraws);
 signals:
 
 };
