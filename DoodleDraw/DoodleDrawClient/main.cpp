@@ -28,6 +28,7 @@ int main(int argc, char *argv[])
 
     QQmlContext * context = engine.rootContext();
     context->setContextProperty("clientSocketHandler", &clientSocketHandler);
+    context->setContextProperty("applicationDirPath", QGuiApplication::applicationDirPath());
     context->setContextProperty("gameManager", &gameManager);
     return app.exec();
 }

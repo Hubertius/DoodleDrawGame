@@ -42,7 +42,7 @@ Item {
 
 
     GameButton {
-        id: sendButton
+        id: finishButton
         width: 174
         height: 80
         buttonColor: "#20A39E"
@@ -55,6 +55,12 @@ Item {
             bottom: parent.bottom
             rightMargin: 80
             bottomMargin: 40
+        }
+        onButtonClicked: {
+            var result = drawCanvas.save(applicationDirPath + "/../../DoodleDraw/DoodleDrawClient/ui/tmp.png");
+            console.log(applicationDirPath + "/../../DoodleDraw/DoodleDrawClient/ui/tmp.png");
+            console.log(result);
+            mainLoader.source = "qrc:/ui/WaitingForPlayersScreen.qml";
         }
     }
     Rectangle {

@@ -11,10 +11,12 @@ private:
     QString m_gameLobbyID;
     QList<QString> m_gameLobbyClientsList;
     QMap<QString, bool> m_clientsReadiness;
+    QMap<QString, QString> m_clientsDoodlesData;
 public:
     explicit GameLobbyHandler(QString gameID, QObject *parent = nullptr);
     void addClientID(QString clientID);
     void userReadyToPlay(QString clientID);
+    void clientNewDoodleDraw(QString fileData, QString clientID);
 
     QString getGameLobbyClientsAsString() const;
     QList<QString> getGameLobbyClientsAsList() const;
@@ -23,6 +25,7 @@ public:
 signals:
     void usersReadineesChanged();
     void gameReadyToBegin();
+    void allClientsSendDoodleDraws();
 };
 
 #endif // GAMELOBBYHANDLER_H

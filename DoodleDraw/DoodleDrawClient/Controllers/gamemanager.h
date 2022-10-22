@@ -23,6 +23,7 @@ public:
     Q_INVOKABLE void sendMessageToLobby(QString messageToSend);
     Q_INVOKABLE bool isClientReady(QString clientID);
     Q_INVOKABLE void readyToPlay();
+    Q_INVOKABLE void doodleDone();
     ~GameManager();
     QString getRoomLobbyCode();
     QStringList getLobbyClientsIDs();

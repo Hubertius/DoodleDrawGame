@@ -15,6 +15,7 @@ void MessageProcessor::MessageProcessor::processClientMessage(QString messageFro
     //type:joinGame;payload:4000;sender:5555 -> payload as game code
     //type:message;payload:HelloWorld;lobbyID:9999;sender:5555
     //type:readyToPlay;payload:1;sender:5555
+    //type:doodleData;payload:imageContent;sender:5555
     QStringList separatedInfos = messageFromClient.split(";");
     if(separatedInfos.first() == "type:login")
     {
@@ -100,6 +101,23 @@ void MessageProcessor::MessageProcessor::processClientMessage(QString messageFro
             QString clientID = separatedInfos.back().remove("sender:");
             qDebug() << "Server App. Client declared readinees, his ID: " << clientID;
             emit userReadyToPlay(clientID);
+        }
+    }
+    else if(separatedInfos.first() == "type:doodleDraw")
+    {
+        QString fileData = QString();
+        QString clientID = QString();
+        separatedInfos.pop_front();
+        if(separatedInfos.first().contains("payload:"))
+        {
+            fileData = separatedInfos.first().remove("payload:");
+            separatedInfos.pop_front();
+            if(separatedInfos.first().contains("sender:"))
+            {
+                clientID = separatedInfos.first();
+                if(fileData != QString() && clientID != QString())
+                    emit clientNewDoodleDrawing(fileData, clientID);
+            }
         }
     }
 

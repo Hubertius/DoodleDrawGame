@@ -15,6 +15,7 @@ GameManager::GameManager(QObject *parent)
     connect(m_messageProcessHandler, &MessageProcessor::joinGameLobbyRequest, this, &GameManager::joinGameLobbyRequest);
     connect(m_messageProcessHandler, &MessageProcessor::messageLobbyRequest, this, &GameManager::messageLobbyRequest);
     connect(m_messageProcessHandler, &MessageProcessor::userReadyToPlay, this, &GameManager::userReadyToPlay);
+    connect(m_messageProcessHandler, &MessageProcessor::clientNewDoodleDrawing, this, &GameManager::onClientNewDoodleDrawing);
 }
 
 GameManager::~GameManager()
@@ -36,6 +37,7 @@ void GameManager::createGameLobbyRequest(QString clientID)
     GameLobbyHandler * m_gameLobby = new GameLobbyHandler(newGameID, this);
     connect(m_gameLobby, &GameLobbyHandler::usersReadineesChanged, this, &GameManager::usersReadineesChanged);
     connect(m_gameLobby, &GameLobbyHandler::gameReadyToBegin, this, &GameManager::gameReadyToBegin);
+    connect(m_gameLobby, &GameLobbyHandler::allClientsSendDoodleDraws, this, &GameManager::onAllClientsSendDoodleDraws);
     qDebug() << "New game lobby ID: " << newGameID;
     m_gameLobby->addClientID(clientID);
     m_gameLobbys[newGameID] = m_gameLobby;
@@ -82,4 +84,16 @@ void GameManager::gameReadyToBegin()
 {
     GameLobbyHandler * gameLobby = qobject_cast<GameLobbyHandler *>(sender());
     m_webSocketHandler->sendTextMessageToMultipleClients("type:gameReadyToBeginreadineesOfClientsChanged;payload:1", gameLobby->getGameLobbyClientsAsList());
+}
+
+void GameManager::onClientNewDoodleDrawing(QString fileData, QString clientID)
+{
+    QList<GameLobbyHandler *> gameLobbys = m_gameLobbys.values();
+    foreach(GameLobbyHandler * gameLobby, gameLobbys)
+        gameLobby->clientNewDoodleDraw(fileData, clientID);
+}
+
+void GameManager::onAllClientsSendDoodleDraws()
+{
+
 }

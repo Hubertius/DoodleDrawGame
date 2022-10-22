@@ -1,5 +1,7 @@
 #include "gamemanager.h"
 #include <QDebug>
+#include <QFile>
+
 GameManager::GameManager(QObject *parent)
     : QObject{parent}
     , m_roomLobbyCode{QString()}
@@ -40,6 +42,21 @@ bool GameManager::isClientReady(QString clientID)
 void GameManager::readyToPlay()
 {
     emit newMessageToSend("type:readyToPlay;payload:1;sender:" + m_clientID);
+}
+
+void GameManager::doodleDone()
+{
+    // opening image file done by client
+    // loading it into QByteArray
+    // send data to server
+    QFile clientImageFIle("tmp.png");
+    if(!clientImageFIle.open(QIODevice::ReadOnly))
+        return;
+    QByteArray imageContent = clientImageFIle.readAll();
+    clientImageFIle.close();
+
+    //type:doodleData;payload:imageContent;sender:clientID
+    emit newMessageToSend("type:doodleData;payload:" + imageContent.toHex() + ";sender:" + m_clientID);
 }
 
 QString GameManager::getRoomLobbyCode()

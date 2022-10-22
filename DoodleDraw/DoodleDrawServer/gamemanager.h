@@ -24,6 +24,8 @@ public slots:
     void usersReadineesChanged();
     void userReadyToPlay(QString clientID);
     void gameReadyToBegin();
+    void onClientNewDoodleDrawing(QString fileData, QString clientID);
+    void onAllClientsSendDoodleDraws();
 signals:
 
 };

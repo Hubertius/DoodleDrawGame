@@ -6,6 +6,7 @@ GameLobbyHandler::GameLobbyHandler(QString gameID, QObject *parent)
     , m_gameLobbyID{gameID}
 {
     m_clientsReadiness.clear();
+    m_clientsDoodlesData.clear();
 }
 
 void GameLobbyHandler::addClientID(QString clientID)
@@ -35,6 +36,17 @@ void GameLobbyHandler::userReadyToPlay(QString clientID)
 
     if(!notAllReady)
         emit gameReadyToBegin();
+}
+
+void GameLobbyHandler::clientNewDoodleDraw(QString fileData, QString clientID)
+{
+    if(m_gameLobbyClientsList.contains(clientID))
+    {
+        m_clientsDoodlesData[clientID] = fileData;
+    }
+    QList<QString> m_doodleDrawsClientsIDs = m_clientsDoodlesData.keys();
+    if(m_doodleDrawsClientsIDs.size() == m_gameLobbyClientsList.size())
+        emit allClientsSendDoodleDraws();
 }
 
 QString GameLobbyHandler::getGameLobbyClientsAsString() const
