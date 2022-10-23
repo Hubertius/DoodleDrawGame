@@ -16,6 +16,7 @@ signals:
     void messageLobbyRequest(QString messageContent, QString lobbyID, QString clientID);
     void userReadyToPlay(QString clientID);
     void clientNewDoodleDrawing(QString fileData, QString clientID);
+    void clientFinishedDrawWork(QString fileData, QString clientID);
 };
 
 #endif // MESSAGEPROCESSOR_H

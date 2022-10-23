@@ -8,6 +8,10 @@ Item {
         color: "#23001E"
     }
 
+    Component.onCompleted: {
+        drawCanvas.loadImage(gameManager.doodleFilePath());
+    }
+
     Text {
         id: titleText
         font.pixelSize: 72
@@ -18,7 +22,8 @@ Item {
             horizontalCenter: parent.horizontalCenter
         }
         color: "white"
-        text: "Scribble Something! :)"
+        text: "Draw: " + gameManager.drawingInstruction
+
     }
 
     GameButton {
@@ -57,12 +62,11 @@ Item {
             bottomMargin: 40
         }
         onButtonClicked: {
-            var result = drawCanvas.save("tmp.png");
-            console.log(applicationDirPath + "/tmp.png");
-            console.log(result);
+            drawCanvas.save("tmp.png");
             mainLoader.source = "qrc:/ui/WaitingForPlayersScreen.qml";
         }
     }
+
     Rectangle {
         id: canvasBackground
         color: "#C4C4C4"
@@ -88,8 +92,16 @@ Item {
 
         function clearPainting() {
             var ctx = drawCanvas.getContext("2d");
-            ctx.reset()
-            drawCanvas.requestPaint()
+            ctx.reset();
+            drawCanvas.requestPaint();
+        }
+
+        onImageLoaded: {
+            console.log("Loadng image on which client will continue drawing");
+            var ctx = drawCanvas.getContext("2d");
+            console.log(gameManager.doodleFilePath());
+            ctx.drawImage(gameManager.doodleFilePath(), 0,0);
+            drawCanvas.requestPaint();
         }
 
         MouseArea {
@@ -108,7 +120,7 @@ Item {
         onPaint: {
             var ctx = drawCanvas.getContext("2d");
             ctx.beginPath();
-            ctx.strokeStyle = "black"
+            ctx.strokeStyle = "red"
             ctx.lineJoin = "round";
             ctx.lineWidth = 5;
             ctx.moveTo(startX, startY);

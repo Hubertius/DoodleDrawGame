@@ -17,7 +17,7 @@ GameManager::GameManager(QObject *parent)
     connect(m_messageProcessHandler, &MessageProcessor::messageLobbyRequest, this, &GameManager::messageLobbyRequest);
     connect(m_messageProcessHandler, &MessageProcessor::userReadyToPlay, this, &GameManager::userReadyToPlay);
     connect(m_messageProcessHandler, &MessageProcessor::clientNewDoodleDrawing, this, &GameManager::onClientNewDoodleDrawing);
-
+    connect(m_messageProcessHandler, &MessageProcessor::clientFinishedDrawWork, this, &GameManager::onClientFinishedDrawWork);
 }
 
 const QString& GameManager::generateSthForDrawing()
@@ -49,6 +49,7 @@ void GameManager::createGameLobbyRequest(QString clientID)
     connect(m_gameLobby, &GameLobbyHandler::usersReadineesChanged, this, &GameManager::usersReadineesChanged);
     connect(m_gameLobby, &GameLobbyHandler::gameReadyToBegin, this, &GameManager::gameReadyToBegin);
     connect(m_gameLobby, &GameLobbyHandler::allClientsSendDoodleDraws, this, &GameManager::onAllClientsSendDoodleDraws);
+    connect(m_gameLobby, &GameLobbyHandler::allClientsSendFinishedDraws, this, &GameManager::onAllClientsSendFinishedDraws);
     qDebug() << "New game lobby ID: " << newGameID;
     m_gameLobby->addClientID(clientID);
     m_gameLobbys[newGameID] = m_gameLobby;
@@ -112,4 +113,27 @@ void GameManager::onAllClientsSendDoodleDraws(QMap<QString, QString> distrubuted
         m_webSocketHandler->sendTextMessageToClient("type:assignedDrawingData;payload:" + distrubutedDraws[clientID] + ";drawOrder:" + drawingChosenForClients, clientID);
 
 
+}
+
+void GameManager::onClientFinishedDrawWork(QString fileData, QString clientID)
+{
+    QList<GameLobbyHandler *> gameLobbys = m_gameLobbys.values();
+    foreach(GameLobbyHandler * gameLobby, gameLobbys)
+        gameLobby->clientFinishedDrawing(fileData, clientID);
+}
+
+void GameManager::onAllClientsSendFinishedDraws(QMap<QString, QString> clientsFinishedDraws)
+{
+    //type:otherClientsDrawingsForVote;payload:imageFile1,imageFil2,imageFile3;clients:
+    GameLobbyHandler * gameLobby = qobject_cast<GameLobbyHandler *>(sender());
+    QString finishedDrawsData = QString();
+    QString clients = QString();
+    for(QMap<QString, QString>::iterator itr = clientsFinishedDraws.begin(); itr != clientsFinishedDraws.end(); ++itr)
+    {
+        clients.append(itr.key() + ",");
+        finishedDrawsData.append(itr.value() + ",");
+    }
+    clients.chop(1);
+    finishedDrawsData.chop(1);
+    m_webSocketHandler->sendTextMessageToMultipleClients("type:otherClientsDrawingsForVote;payload:" + finishedDrawsData + ";clients:" + clients, gameLobby->getGameLobbyClientsAsList());
 }

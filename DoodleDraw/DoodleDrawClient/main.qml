@@ -12,6 +12,7 @@ Window {
         target: gameManager
         onChangeOfGameLobby: mainLoader.source = "qrc:/ui/LobbyScreen.qml"
         onNewGameBegins: mainLoader.source = "qrc:/ui/DoodleScreen.qml"
+        onClientDrawingForAddedImageStarted: mainLoader.source = "qrc:/ui/DrawingInstructionScreen.qml"
     }
 
     Loader {

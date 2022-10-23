@@ -9,5 +9,6 @@
         <file>ui/assets/check.png</file>
         <file>ui/DoodleScreen.qml</file>
         <file>ui/WaitingForPlayersScreen.qml</file>
+        <file>ui/DrawingInstructionScreen.qml</file>
     </qresource>
 </RCC>

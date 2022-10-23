@@ -28,6 +28,8 @@ public slots:
     void gameReadyToBegin();
     void onClientNewDoodleDrawing(QString fileData, QString clientID);
     void onAllClientsSendDoodleDraws(QMap<QString, QString> distrubutedDraws);
+    void onClientFinishedDrawWork(QString fileData, QString clientID);
+    void onAllClientsSendFinishedDraws(QMap<QString, QString> clientsFinishedDraws);
 signals:
 
 };

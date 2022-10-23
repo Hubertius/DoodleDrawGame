@@ -10,6 +10,7 @@ GameManager::GameManager(QObject *parent)
     , m_lobbyClientsIDs(QStringList())
     , m_clientsReadineesList(QStringList())
     , m_drawingInstruction(QString())
+    , m_isDrawingFinished(false)
 {
     m_messageProcessHandler = new MessageProcessorHandler(this);
     connect(m_messageProcessHandler, &MessageProcessorHandler::newClientIdRegistration, this, &GameManager::registerClientID);
@@ -52,14 +53,21 @@ void GameManager::doodleDone()
     // opening image file done by client
     // loading it into QByteArray
     // send data to server
-    QFile clientImageFIle(QDir::currentPath() + "/../../DoodleDraw/DoodleDrawClient/ui/tmp.png");
+    QFile clientImageFIle("tmp.png");
     if(!clientImageFIle.open(QIODevice::ReadOnly))
         return;
     QByteArray imageContent = clientImageFIle.readAll();
     clientImageFIle.close();
-
+    if(m_isDrawingFinished)
+        emit newMessageToSend("type:drawDataFinished;payload:" + imageContent.toHex() + ";sender:" + m_clientID);
+    else
+        emit newMessageToSend("type:doodleData;payload:" + imageContent.toHex() + ";sender:" + m_clientID);
     //type:doodleDrawData;payload:imageContent;sender:clientID
-    emit newMessageToSend("type:doodleDrawData;payload:" + imageContent.toHex() + ";sender:" + m_clientID);
+}
+
+QString GameManager::doodleFilePath()
+{
+    return "file:///" + QDir::currentPath() + QDir::separator() +  m_clientID + ".png";
 }
 
 QString GameManager::getRoomLobbyCode()
@@ -134,14 +142,17 @@ void GameManager::onClientReceivedDrawForContinuation(QString imageFileData, QSt
 {
     qDebug() << "OVER HERE!";
     setDrawingInstruction(drawOrder);
-    qDebug() << QDir::currentPath() + "/../../DoodleDraw/DoodleDrawClient/ui/" + m_clientID + ".png";
-    QFile tmpImage(QDir::currentPath() + "/../../DoodleDraw/DoodleDrawClient/ui/" + m_clientID + ".png");
+    m_isDrawingFinished = true;
+    qDebug() << QDir::currentPath() + QDir::separator() + m_clientID + ".png";
+    QFile tmpImage(m_clientID + ".png");
     if(!tmpImage.open(QIODevice::WriteOnly))
         return;
     QByteArray byteData = QByteArray::fromHex(imageFileData.toLocal8Bit());
     tmpImage.write(byteData);
     tmpImage.flush();
     tmpImage.close();
+
+    emit clientDrawingForAddedImageStarted();
 }
 
 GameManager::~GameManager()

@@ -16,6 +16,7 @@ private:
     QStringList m_lobbyClientsIDs;
     QStringList m_clientsReadineesList;
     QString m_drawingInstruction;
+    bool m_isDrawingFinished;
     MessageProcessorHandler * m_messageProcessHandler;
 
 public:
@@ -26,6 +27,7 @@ public:
     Q_INVOKABLE bool isClientReady(QString clientID);
     Q_INVOKABLE void readyToPlay();
     Q_INVOKABLE void doodleDone();
+    Q_INVOKABLE QString doodleFilePath();
     ~GameManager();
     QString getRoomLobbyCode();
     QStringList getLobbyClientsIDs();
@@ -40,7 +42,7 @@ signals:
     void newMessageForLobby(QString messageForDisplaying);
     void updatedClientsListReadinees();
     void newGameBegins();
-    void clientAddDrawStarted();
+    void clientDrawingForAddedImageStarted();
 
 public slots:
     void setRoomLobbyCode(QString lobbyCode);

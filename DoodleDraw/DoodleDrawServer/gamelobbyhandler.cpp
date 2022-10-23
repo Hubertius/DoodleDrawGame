@@ -7,6 +7,7 @@ GameLobbyHandler::GameLobbyHandler(QString gameID, QObject *parent)
 {
     m_clientsReadiness.clear();
     m_clientsDoodlesData.clear();
+    m_clientsFinishedDraws.clear();
 }
 
 void GameLobbyHandler::addClientID(QString clientID)
@@ -41,19 +42,17 @@ void GameLobbyHandler::userReadyToPlay(QString clientID)
 void GameLobbyHandler::clientNewDoodleDraw(QString fileData, QString clientID)
 {
     if(m_gameLobbyClientsList.contains(clientID))
-    {
         m_clientsDoodlesData[clientID] = fileData;
-    }
     QList<QString> m_doodleDrawsClientsIDs = m_clientsDoodlesData.keys();
     if(m_doodleDrawsClientsIDs.size() == m_gameLobbyClientsList.size())
     {
         QMap<QString, QString> distrubutedDraws;
         for(int index = 0; index < m_doodleDrawsClientsIDs.size(); ++index)
         {
-            QString client = m_doodleDrawsClientsIDs.at(index);
+            QString client = m_gameLobbyClientsList.at(index);
             QString doodle;
 
-            if(index == m_doodleDrawsClientsIDs.size() - 1)
+            if(index == m_gameLobbyClientsList.size() - 1)
                 doodle = m_clientsDoodlesData[m_gameLobbyClientsList.at(0)];
             else
                 doodle = m_clientsDoodlesData[m_gameLobbyClientsList.at(index+1)];
@@ -62,6 +61,14 @@ void GameLobbyHandler::clientNewDoodleDraw(QString fileData, QString clientID)
         emit allClientsSendDoodleDraws(distrubutedDraws);
 
     }
+}
+
+void GameLobbyHandler::clientFinishedDrawing(QString fileData, QString clientID)
+{
+    if(m_gameLobbyClientsList.contains(clientID))
+        m_clientsFinishedDraws[clientID] = fileData;
+    if(m_clientsFinishedDraws.keys().size() == m_gameLobbyClientsList.size())
+        emit allClientsSendFinishedDraws(m_clientsFinishedDraws);
 }
 
 QString GameLobbyHandler::getGameLobbyClientsAsString() const

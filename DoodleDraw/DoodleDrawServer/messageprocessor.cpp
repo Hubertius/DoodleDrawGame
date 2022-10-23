@@ -16,6 +16,7 @@ void MessageProcessor::MessageProcessor::processClientMessage(QString messageFro
     //type:message;payload:HelloWorld;lobbyID:9999;sender:5555
     //type:readyToPlay;payload:1;sender:5555
     //type:doodleData;payload:imageContent;sender:5555
+    //type:drawData;payload:imageContent;sender:5555
     QStringList separatedInfos = messageFromClient.split(";");
     if(separatedInfos.first() == "type:login")
     {
@@ -103,10 +104,12 @@ void MessageProcessor::MessageProcessor::processClientMessage(QString messageFro
             emit userReadyToPlay(clientID);
         }
     }
-    else if(separatedInfos.first() == "type:doodleDrawData")
+    else if(separatedInfos.first() == "type:doodleData" || separatedInfos.first() == "type:drawDataFinished")
     {
+        QString type = QString();
         QString fileData = QString();
         QString clientID = QString();
+        type = separatedInfos.first().remove("type:");
         separatedInfos.pop_front();
         if(separatedInfos.first().contains("payload:"))
         {
@@ -115,10 +118,11 @@ void MessageProcessor::MessageProcessor::processClientMessage(QString messageFro
             if(separatedInfos.first().contains("sender:"))
             {
                 clientID = separatedInfos.first().remove("sender:");
-                if(fileData != QString() && clientID != QString())
+                if(fileData != QString() && clientID != QString() && type == "doodleData")
                     emit clientNewDoodleDrawing(fileData, clientID);
+                else if(fileData != QString() && clientID != QString() && type == "drawDataFinished")
+                    emit clientFinishedDrawWork(fileData, clientID);
             }
         }
     }
-
 }

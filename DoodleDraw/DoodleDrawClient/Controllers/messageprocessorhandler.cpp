@@ -18,6 +18,7 @@ void MessageProcessorHandler::processMessage(QString messageFromServer)
     //type:readineesOfClientsChanged;payload:1234,4444
     //type:gameReadyToBegin;payload:1
     //type:assignedDrawingData;payload:distrubutedDraws[clientID];drawOrder:drawingChosenForClients
+    //type:otherClientsDrawingsForVote;payload:imageFile1,imageFil2,imageFile3;clients:
     QStringList separatedInfos = messageFromServer.split(";");
     if(separatedInfos.first() == "type:uniqueID")
     {
