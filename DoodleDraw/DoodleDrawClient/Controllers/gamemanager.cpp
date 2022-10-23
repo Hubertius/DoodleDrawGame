@@ -10,6 +10,7 @@ GameManager::GameManager(QObject *parent)
     , m_lobbyClientsIDs(QStringList())
     , m_clientsReadineesList(QStringList())
     , m_drawingInstruction(QString())
+    , m_finishedDrawingList(QStringList())
     , m_isDrawingFinished(false)
 {
     m_messageProcessHandler = new MessageProcessorHandler(this);
@@ -71,6 +72,11 @@ QString GameManager::doodleFilePath()
     return "file:///" + QDir::currentPath() + QDir::separator() +  m_clientID + ".png";
 }
 
+void GameManager::voteOfUser(QString imageURL)
+{
+
+}
+
 QString GameManager::getRoomLobbyCode()
 {
     qDebug() << "Client App (GameManager). Get Lobby code: " << m_roomLobbyCode;
@@ -85,6 +91,11 @@ QStringList GameManager::getLobbyClientsIDs()
 QString GameManager::getDrawingInstruction()
 {
     return m_drawingInstruction;
+}
+
+QStringList GameManager::getFinishedDrawingsList()
+{
+    return m_finishedDrawingList;
 }
 
 void GameManager::setLobbyClientsIDs(QStringList newClientsOfLobbyList)
@@ -162,17 +173,33 @@ void GameManager::onClientReceivedFinishedDraws(QStringList imagesData, QStringL
     workingDir.mkdir("ClientsFinishedWorks");
 
     QString filePathToClientsWorksDir = QDir::currentPath() + QDir::separator() + "ClientsFinishedWorks";
+    QStringList clientsWorksList = QStringList();
     for(int i = 0; i < clientsIDs.size(); ++i)
     {
         // TODO: Excluding current client from making imageFile (current client shouldn't have option to vote for himself)
-        QFile tempOtherClientImageWork(filePathToClientsWorksDir + QDir::separator() + clientsIDs.at(i) + ".png");
+        QString filePath = filePathToClientsWorksDir + QDir::separator() + clientsIDs.at(i) + ".png";
+        QFile tempOtherClientImageWork(filePath);
         tempOtherClientImageWork.open(QIODevice::WriteOnly);
         QByteArray fileData = QByteArray::fromHex(imagesData.at(i).toLocal8Bit());
         tempOtherClientImageWork.write(fileData);
         tempOtherClientImageWork.flush();
         tempOtherClientImageWork.close();
+        filePath.prepend("file://");
+        clientsWorksList.append(filePath);
     }
 
+    setFinishedDrawingsList(clientsWorksList);
+    emit votingTime();
+
+}
+
+void GameManager::setFinishedDrawingsList(QStringList finishedDrawingList)
+{
+    if(m_finishedDrawingList != finishedDrawingList)
+    {
+        m_finishedDrawingList = finishedDrawingList;
+        emit finishedDrawingsListChanged();
+    }
 }
 
 GameManager::~GameManager()

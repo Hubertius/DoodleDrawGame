@@ -10,12 +10,14 @@ class GameManager : public QObject
     Q_PROPERTY(QString roomLobbyCode READ getRoomLobbyCode WRITE setRoomLobbyCode NOTIFY roomLobbyCodeChanged)
     Q_PROPERTY(QStringList lobbyClientsIDs READ getLobbyClientsIDs WRITE setLobbyClientsIDs NOTIFY lobbyClientsIDsChanged)
     Q_PROPERTY(QString drawingInstruction READ getDrawingInstruction WRITE setDrawingInstruction NOTIFY newDrawingInstruction)
+    Q_PROPERTY(QStringList finishedDrawingsList READ getFinishedDrawingsList WRITE setFinishedDrawingsList NOTIFY finishedDrawingsListChanged)
 private:
     QString m_roomLobbyCode;
     QString m_clientID;
     QStringList m_lobbyClientsIDs;
     QStringList m_clientsReadineesList;
     QString m_drawingInstruction;
+    QStringList m_finishedDrawingList;
     bool m_isDrawingFinished;
     MessageProcessorHandler * m_messageProcessHandler;
 
@@ -28,10 +30,12 @@ public:
     Q_INVOKABLE void readyToPlay();
     Q_INVOKABLE void doodleDone();
     Q_INVOKABLE QString doodleFilePath();
+    Q_INVOKABLE void voteOfUser(QString imageURL);
     ~GameManager();
     QString getRoomLobbyCode();
     QStringList getLobbyClientsIDs();
     QString getDrawingInstruction();
+    QStringList getFinishedDrawingsList();
 
 signals:
     void roomLobbyCodeChanged();
@@ -43,6 +47,8 @@ signals:
     void updatedClientsListReadinees();
     void newGameBegins();
     void clientDrawingForAddedImageStarted();
+    void finishedDrawingsListChanged();
+    void votingTime();
 
 public slots:
     void setRoomLobbyCode(QString lobbyCode);
@@ -54,6 +60,7 @@ public slots:
     void newClientsReadyList(QStringList updatedClientsListReadinees);
     void onClientReceivedDrawForContinuation(QString imageFileData, QString drawOrder);
     void onClientReceivedFinishedDraws(QStringList imagesData, QStringList clientsIDs);
+    void setFinishedDrawingsList(QStringList finishedDrawingList);
 };
 
 #endif // GAMEMANAGER_H
