@@ -20,6 +20,7 @@ GameManager::GameManager(QObject *parent)
     connect(m_messageProcessHandler, &MessageProcessorHandler::newClientsReadyList, this, &GameManager::newClientsReadyList);
     connect(m_messageProcessHandler, &MessageProcessorHandler::newGameBegins, this, &GameManager::newGameBegins);
     connect(m_messageProcessHandler, &MessageProcessorHandler::clientReceivedDrawForContinuation, this, &GameManager::onClientReceivedDrawForContinuation);
+    connect(m_messageProcessHandler, &MessageProcessorHandler::clientReceivedFinishedDraws, this, &GameManager::onClientReceivedFinishedDraws);
 }
 
 void GameManager::createGameRequest()
@@ -153,6 +154,25 @@ void GameManager::onClientReceivedDrawForContinuation(QString imageFileData, QSt
     tmpImage.close();
 
     emit clientDrawingForAddedImageStarted();
+}
+
+void GameManager::onClientReceivedFinishedDraws(QStringList imagesData, QStringList clientsIDs)
+{
+    QDir workingDir = QDir::currentPath();
+    workingDir.mkdir("ClientsFinishedWorks");
+
+    QString filePathToClientsWorksDir = QDir::currentPath() + QDir::separator() + "ClientsFinishedWorks";
+    for(int i = 0; i < clientsIDs.size(); ++i)
+    {
+        // TODO: Excluding current client from making imageFile (current client shouldn't have option to vote for himself)
+        QFile tempOtherClientImageWork(filePathToClientsWorksDir + QDir::separator() + clientsIDs.at(i) + ".png");
+        tempOtherClientImageWork.open(QIODevice::WriteOnly);
+        QByteArray fileData = QByteArray::fromHex(imagesData.at(i).toLocal8Bit());
+        tempOtherClientImageWork.write(fileData);
+        tempOtherClientImageWork.flush();
+        tempOtherClientImageWork.close();
+    }
+
 }
 
 GameManager::~GameManager()

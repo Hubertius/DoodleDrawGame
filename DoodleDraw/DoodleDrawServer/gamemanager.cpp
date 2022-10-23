@@ -95,7 +95,7 @@ void GameManager::userReadyToPlay(QString clientID)
 void GameManager::gameReadyToBegin()
 {
     GameLobbyHandler * gameLobby = qobject_cast<GameLobbyHandler *>(sender());
-    m_webSocketHandler->sendTextMessageToMultipleClients("type:gameReadyToBeginreadineesOfClientsChanged;payload:1", gameLobby->getGameLobbyClientsAsList());
+    m_webSocketHandler->sendTextMessageToMultipleClients("type:gameReadyToBegin;payload:1", gameLobby->getGameLobbyClientsAsList());
 }
 
 void GameManager::onClientNewDoodleDrawing(QString fileData, QString clientID)

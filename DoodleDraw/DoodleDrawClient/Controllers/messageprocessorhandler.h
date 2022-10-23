@@ -17,6 +17,7 @@ signals:
     void newClientsReadyList(QStringList readyClientsList);
     void newGameBegins();
     void clientReceivedDrawForContinuation(QString imageFileData, QString drawOrder);
+    void clientReceivedFinishedDraws(QStringList imagesData, QStringList clientsIDs);
 };
 
 #endif // MESSAGEPROCESSORHANDLER_H

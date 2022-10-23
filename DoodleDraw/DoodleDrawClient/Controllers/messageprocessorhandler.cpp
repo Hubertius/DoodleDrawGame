@@ -52,7 +52,7 @@ void MessageProcessorHandler::processMessage(QString messageFromServer)
             emit newLobby(createdLobbyID, lobbyClients);
 
     }
-    else if(separatedInfos.first().contains("type:updatedClientsList"))
+    else if(separatedInfos.first() == "type:updatedClientsList")
     {
         qDebug() << "Client App. Updating for client info about other clients";
         separatedInfos.pop_front();
@@ -66,7 +66,7 @@ void MessageProcessorHandler::processMessage(QString messageFromServer)
         emit updatedClientsList(updatedLobbyClients);
 
     }
-    else if(separatedInfos.first().contains("type:message"))
+    else if(separatedInfos.first() == "type:message")
     {
         //type:message;payload:HelloWorld;sender:5555
         separatedInfos.pop_front();
@@ -84,8 +84,9 @@ void MessageProcessorHandler::processMessage(QString messageFromServer)
             }
         }
     }
-    else if(separatedInfos.first().contains("type:readineesOfClientsChanged"))
+    else if(separatedInfos.first() == "type:readineesOfClientsChanged")
     {
+         qDebug() << "OVER HERE 1";
          separatedInfos.pop_front();
          QString clientsReady = QString();
          if(separatedInfos.first().contains("payload:"))
@@ -98,11 +99,12 @@ void MessageProcessorHandler::processMessage(QString messageFromServer)
              }
          }
     }
-    else if(separatedInfos.first().contains("type:gameReadyToBegin"))
+    else if(separatedInfos.first() == "type:gameReadyToBegin")
     {
+        qDebug() << "OVER HERE 2";
         emit newGameBegins();
     }
-    else if(separatedInfos.first().contains("type:assignedDrawingData"))
+    else if(separatedInfos.first() == "type:assignedDrawingData")
     {
         qDebug() << "Client App. Received image file data for client for drawing with instruction what to draw.";
         separatedInfos.pop_front();
@@ -117,6 +119,23 @@ void MessageProcessorHandler::processMessage(QString messageFromServer)
                 drawOrder = separatedInfos.first().remove("drawOrder:");
                 if(imageForDrawingData != QString() && drawOrder != QString())
                     emit clientReceivedDrawForContinuation(imageForDrawingData, drawOrder);
+            }
+        }
+    }
+    else if(separatedInfos.first() == "type:otherClientsDrawingsForVote")
+    {
+        QString otherClientsFinishedDraws = QString();
+        QString clientsIDs = QString();
+        separatedInfos.pop_front();
+        if(separatedInfos.first().contains("payload:"))
+        {
+            otherClientsFinishedDraws = separatedInfos.first().remove("payload");
+            separatedInfos.pop_front();
+            if(separatedInfos.first().contains("clients:"))
+            {
+                clientsIDs = separatedInfos.first().remove("clients:");
+                if(otherClientsFinishedDraws != QString() && clientsIDs != QString())
+                    emit clientReceivedFinishedDraws(otherClientsFinishedDraws.split(","), clientsIDs.split(","));
             }
         }
     }

@@ -53,6 +53,7 @@ public slots:
     void joinLobby(QString lobbyCode, QStringList clientsIDsList);
     void newClientsReadyList(QStringList updatedClientsListReadinees);
     void onClientReceivedDrawForContinuation(QString imageFileData, QString drawOrder);
+    void onClientReceivedFinishedDraws(QStringList imagesData, QStringList clientsIDs);
 };
 
 #endif // GAMEMANAGER_H
