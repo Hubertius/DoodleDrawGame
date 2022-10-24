@@ -18,6 +18,7 @@ signals:
     void newGameBegins();
     void clientReceivedDrawForContinuation(QString imageFileData, QString drawOrder);
     void clientReceivedFinishedDraws(QStringList imagesData, QStringList clientsIDs);
+    void winnerVoted(QString winnerClientID);
 };
 
 #endif // MESSAGEPROCESSORHANDLER_H

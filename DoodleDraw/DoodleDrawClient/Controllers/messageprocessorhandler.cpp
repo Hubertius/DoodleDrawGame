@@ -19,6 +19,7 @@ void MessageProcessorHandler::processMessage(QString messageFromServer)
     //type:gameReadyToBegin;payload:1
     //type:assignedDrawingData;payload:distrubutedDraws[clientID];drawOrder:drawingChosenForClients
     //type:otherClientsDrawingsForVote;payload:imageFile1,imageFil2,imageFile3;clients:
+    //type:winner;payload:1111;sender:5555
     QStringList separatedInfos = messageFromServer.split(";");
     if(separatedInfos.first() == "type:uniqueID")
     {
@@ -137,6 +138,22 @@ void MessageProcessorHandler::processMessage(QString messageFromServer)
                 if(otherClientsFinishedDraws != QString() && clientsIDs != QString())
                     emit clientReceivedFinishedDraws(otherClientsFinishedDraws.split(","), clientsIDs.split(","));
             }
+        }
+    }
+    else if(separatedInfos.first() == "type:winner")
+    {
+        QString winnerClientID = QString();
+        QString senderClientID = QString();
+        separatedInfos.pop_front();
+        if(separatedInfos.first().contains("payload:"))
+        {
+            winnerClientID = separatedInfos.first().remove("payload:");
+            separatedInfos.pop_front();
+            if(winnerClientID != QString())
+            {
+                emit winnerVoted(winnerClientID);
+            }
+
         }
     }
 

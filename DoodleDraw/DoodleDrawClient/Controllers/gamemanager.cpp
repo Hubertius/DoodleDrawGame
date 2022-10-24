@@ -12,6 +12,7 @@ GameManager::GameManager(QObject *parent)
     , m_drawingInstruction(QString())
     , m_finishedDrawingList(QStringList())
     , m_isDrawingFinished(false)
+    , m_isVoteFinished(false)
 {
     m_messageProcessHandler = new MessageProcessorHandler(this);
     connect(m_messageProcessHandler, &MessageProcessorHandler::newClientIdRegistration, this, &GameManager::registerClientID);
@@ -22,6 +23,7 @@ GameManager::GameManager(QObject *parent)
     connect(m_messageProcessHandler, &MessageProcessorHandler::newGameBegins, this, &GameManager::newGameBegins);
     connect(m_messageProcessHandler, &MessageProcessorHandler::clientReceivedDrawForContinuation, this, &GameManager::onClientReceivedDrawForContinuation);
     connect(m_messageProcessHandler, &MessageProcessorHandler::clientReceivedFinishedDraws, this, &GameManager::onClientReceivedFinishedDraws);
+    connect(m_messageProcessHandler, &MessageProcessorHandler::winnerVoted, this, &GameManager::onWinnerVoted);
 }
 
 void GameManager::createGameRequest()
@@ -55,6 +57,8 @@ void GameManager::doodleDone()
     // opening image file done by client
     // loading it into QByteArray
     // send data to server
+    if(m_isVoteFinished)
+        return;
     QFile clientImageFIle("tmp.png");
     if(!clientImageFIle.open(QIODevice::ReadOnly))
         return;
@@ -74,7 +78,15 @@ QString GameManager::doodleFilePath()
 
 void GameManager::voteOfUser(QString imageURL)
 {
+    QFileInfo fileInfo(imageURL); // should be only fileName as "clientID"
+    m_isVoteFinished = true;
+    emit newMessageToSend("type:voteOfUser;payload:" + fileInfo.baseName() + ";sender:" + m_clientID);
+}
 
+QString GameManager::getWinnerImager()
+{
+    QString filePathToClientsWorksDir = QDir::currentPath() + QDir::separator() + "ClientsFinishedWorks";
+    return "file://" + filePathToClientsWorksDir + QDir::separator() + getWinnerClientID() + ".png";
 }
 
 QString GameManager::getRoomLobbyCode()
@@ -96,6 +108,11 @@ QString GameManager::getDrawingInstruction()
 QStringList GameManager::getFinishedDrawingsList()
 {
     return m_finishedDrawingList;
+}
+
+QString GameManager::getWinnerClientID()
+{
+    return m_winnerClientID;
 }
 
 void GameManager::setLobbyClientsIDs(QStringList newClientsOfLobbyList)
@@ -126,6 +143,15 @@ void GameManager::setDrawingInstruction(QString drawOrder)
 {
     m_drawingInstruction = drawOrder;
     emit newDrawingInstruction();
+}
+
+void GameManager::setWinnerClientID(QString winnerClientID)
+{
+    if(m_winnerClientID != winnerClientID)
+    {
+        m_winnerClientID = winnerClientID;
+        emit winnerClientIDChanged();
+    }
 }
 
 void GameManager::registerClientID(QString clientID)
@@ -200,6 +226,12 @@ void GameManager::setFinishedDrawingsList(QStringList finishedDrawingList)
         m_finishedDrawingList = finishedDrawingList;
         emit finishedDrawingsListChanged();
     }
+}
+
+void GameManager::onWinnerVoted(QString winnerClientID)
+{
+    setWinnerClientID(winnerClientID);
+    emit gameOver();
 }
 
 GameManager::~GameManager()

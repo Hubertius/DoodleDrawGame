@@ -17,6 +17,7 @@ void MessageProcessor::MessageProcessor::processClientMessage(QString messageFro
     //type:readyToPlay;payload:1;sender:5555
     //type:doodleData;payload:imageContent;sender:5555
     //type:drawData;payload:imageContent;sender:5555
+    //type:voteOfUser;payload:clientID;sender:5555
     QStringList separatedInfos = messageFromClient.split(";");
     if(separatedInfos.first() == "type:login")
     {
@@ -122,6 +123,23 @@ void MessageProcessor::MessageProcessor::processClientMessage(QString messageFro
                     emit clientNewDoodleDrawing(fileData, clientID);
                 else if(fileData != QString() && clientID != QString() && type == "drawDataFinished")
                     emit clientFinishedDrawWork(fileData, clientID);
+            }
+        }
+    }
+    else if(separatedInfos.first() == "type:voteOfUser")
+    {
+        QString vote = QString();
+        QString clientID = QString();
+        separatedInfos.pop_front();
+        if(separatedInfos.first().contains("payload:"))
+        {
+            vote = separatedInfos.first().remove("payload:");
+            separatedInfos.pop_front();
+            if(separatedInfos.first().contains("sender:"))
+            {
+                clientID = separatedInfos.first().remove("sender:");
+                if(vote != QString() && clientID != QString())
+                    emit newVote(vote, clientID);
             }
         }
     }

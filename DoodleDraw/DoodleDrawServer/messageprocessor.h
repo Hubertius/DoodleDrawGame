@@ -17,6 +17,7 @@ signals:
     void userReadyToPlay(QString clientID);
     void clientNewDoodleDrawing(QString fileData, QString clientID);
     void clientFinishedDrawWork(QString fileData, QString clientID);
+    void newVote(QString vote, QString clientID);
 };
 
 #endif // MESSAGEPROCESSOR_H

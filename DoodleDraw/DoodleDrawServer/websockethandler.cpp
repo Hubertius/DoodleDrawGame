@@ -86,7 +86,7 @@ void WebSocketHandler::onDatabaseTextMessageReceived(QString databaseMessageRece
     // if yes -> everything ok and client is allowed to continue
 }
 
-void WebSocketHandler::WebSocketHandler::onClientSocketDisconnect()
+void WebSocketHandler::onClientSocketDisconnect()
 {
     auto clientToDisconnect = qobject_cast<QWebSocket *>(sender());
     if(clientToDisconnect)
@@ -94,8 +94,10 @@ void WebSocketHandler::WebSocketHandler::onClientSocketDisconnect()
         for(QMap<QString, QWebSocket *>::iterator itr = m_clientsList.begin(); itr != m_clientsList.end(); ++itr)
         {
             if(itr.value() == clientToDisconnect)
+            {
                 m_clientsList.remove(itr.key());
-            clientToDisconnect->deleteLater();
+                clientToDisconnect->deleteLater();
+            }
         }
     }
 }

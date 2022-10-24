@@ -80,7 +80,8 @@ Item {
         }
 
         onButtonClicked: {
-            gameManager.voteOfUser(votedImage);
+            gameManager.voteOfUser(votingScreen.votedImage);
+            mainLoader.source = "ui/WaitingForPlayersScreen.qml";
         }
     }
 }

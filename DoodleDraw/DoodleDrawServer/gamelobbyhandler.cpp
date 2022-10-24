@@ -8,6 +8,7 @@ GameLobbyHandler::GameLobbyHandler(QString gameID, QObject *parent)
     m_clientsReadiness.clear();
     m_clientsDoodlesData.clear();
     m_clientsFinishedDraws.clear();
+    m_voteResults.clear();
 }
 
 void GameLobbyHandler::addClientID(QString clientID)
@@ -69,6 +70,29 @@ void GameLobbyHandler::clientFinishedDrawing(QString fileData, QString clientID)
         m_clientsFinishedDraws[clientID] = fileData;
     if(m_clientsFinishedDraws.keys().size() == m_gameLobbyClientsList.size())
         emit allClientsSendFinishedDraws(m_clientsFinishedDraws);
+}
+
+void GameLobbyHandler::newVote(QString vote, QString clientID)
+{
+    if(m_gameLobbyClientsList.contains(clientID) && !m_clientsWhoVoted.contains(clientID))
+    {
+        m_clientsWhoVoted.append(clientID);
+        m_voteResults[vote]++;
+        if(m_clientsWhoVoted.size() == m_gameLobbyClientsList.size())
+        {
+            QString winnerClientID = QString();
+            int highestValue = -1;
+            for(QMap<QString, int>::iterator itr = m_voteResults.begin(); itr != m_voteResults.end(); ++itr)
+            {
+                if(itr.value() > highestValue)
+                {
+                    winnerClientID = itr.key();
+                    highestValue = itr.value();
+                }
+            }
+            emit allClientsVoted(winnerClientID);
+        }
+    }
 }
 
 QString GameLobbyHandler::getGameLobbyClientsAsString() const

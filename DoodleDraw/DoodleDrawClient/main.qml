@@ -14,6 +14,7 @@ Window {
         onNewGameBegins: mainLoader.source = "qrc:/ui/DoodleScreen.qml"
         onClientDrawingForAddedImageStarted: mainLoader.source = "qrc:/ui/DrawingInstructionScreen.qml"
         onVotingTime: mainLoader.source = "qrc:/ui/VoteScreen.qml"
+        onGameOver: mainLoader.source = "qrc:/ui/WinnerScreen.qml"
     }
 
     Loader {

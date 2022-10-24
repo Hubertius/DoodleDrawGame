@@ -30,6 +30,8 @@ public slots:
     void onAllClientsSendDoodleDraws(QMap<QString, QString> distrubutedDraws);
     void onClientFinishedDrawWork(QString fileData, QString clientID);
     void onAllClientsSendFinishedDraws(QMap<QString, QString> clientsFinishedDraws);
+    void onNewVote(QString vote, QString clientID);
+    void onAllClientsVoted(QString winnerClientID);
 signals:
 
 };

@@ -18,6 +18,7 @@ GameManager::GameManager(QObject *parent)
     connect(m_messageProcessHandler, &MessageProcessor::userReadyToPlay, this, &GameManager::userReadyToPlay);
     connect(m_messageProcessHandler, &MessageProcessor::clientNewDoodleDrawing, this, &GameManager::onClientNewDoodleDrawing);
     connect(m_messageProcessHandler, &MessageProcessor::clientFinishedDrawWork, this, &GameManager::onClientFinishedDrawWork);
+    connect(m_messageProcessHandler, &MessageProcessor::newVote, this, &GameManager::onNewVote);
 }
 
 const QString& GameManager::generateSthForDrawing()
@@ -50,6 +51,7 @@ void GameManager::createGameLobbyRequest(QString clientID)
     connect(m_gameLobby, &GameLobbyHandler::gameReadyToBegin, this, &GameManager::gameReadyToBegin);
     connect(m_gameLobby, &GameLobbyHandler::allClientsSendDoodleDraws, this, &GameManager::onAllClientsSendDoodleDraws);
     connect(m_gameLobby, &GameLobbyHandler::allClientsSendFinishedDraws, this, &GameManager::onAllClientsSendFinishedDraws);
+    connect(m_gameLobby, &GameLobbyHandler::allClientsVoted, this, &GameManager::onAllClientsVoted);
     qDebug() << "New game lobby ID: " << newGameID;
     m_gameLobby->addClientID(clientID);
     m_gameLobbys[newGameID] = m_gameLobby;
@@ -137,3 +139,17 @@ void GameManager::onAllClientsSendFinishedDraws(QMap<QString, QString> clientsFi
     finishedDrawsData.chop(1);
     m_webSocketHandler->sendTextMessageToMultipleClients("type:otherClientsDrawingsForVote;payload:" + finishedDrawsData + ";clients:" + clients, gameLobby->getGameLobbyClientsAsList());
 }
+
+void GameManager::onNewVote(QString vote, QString clientID)
+{
+    QList<GameLobbyHandler *> gameLobbys = m_gameLobbys.values();
+    foreach(GameLobbyHandler * gameLobby, gameLobbys)
+        gameLobby->newVote(vote, clientID);
+}
+
+void GameManager::onAllClientsVoted(QString winnerClientID)
+{
+    GameLobbyHandler * gameLobby = qobject_cast<GameLobbyHandler *>(sender());
+    m_webSocketHandler->sendTextMessageToMultipleClients("type:winner;payload:" + winnerClientID, gameLobby->getGameLobbyClientsAsList());
+}
+
