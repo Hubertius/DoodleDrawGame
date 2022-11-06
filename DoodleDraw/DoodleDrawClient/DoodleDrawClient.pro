@@ -29,4 +29,5 @@ HEADERS += \
     Controllers/messageprocessorhandler.h \
     Controllers/websockethandler.h
 
-DISTFILES +=
+DISTFILES += \
+    Dockerfile

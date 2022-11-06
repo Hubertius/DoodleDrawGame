@@ -25,3 +25,6 @@ HEADERS += \
     gamemanager.h \
     messageprocessor.h \
     websockethandler.h
+
+DISTFILES += \
+    Dockerfile
