@@ -8,10 +8,14 @@ RUN sudo apt-get update \
     qtbase5-dev-tools qt5-image-formats-plugins qtwayland5 qtdeclarative5-dev \
     default-libmysqlclient-dev \
     libxkbcommon-dev libqt5websockets5-dev libxcb-xinerama0 libx11-xcb-dev libxkbcommon-dev libqt5websockets5-dev libxcb-xinerama0 \
-    libx11-xcb-dev libglu1-mesa-dev libxrender-dev libxi-dev libqt5gui5 libxext-dev libxext-doc libxtst-dev
+    libx11-xcb-dev libglu1-mesa-dev libxrender-dev libxi-dev libqt5gui5 libxext-dev libxext-doc libxtst-dev \
+    qml-module-qtquick-controls2 qml-module-qtquick2 qml-module-qtquick-window2 libqt5qml5
 
-ENV QT_DEBUG_PLUGINS=1
 ENV QT_QPA_PLATFORM=xcb
+
+ENV DISPLAY=host.docker.internal:0.0
+
+EXPOSE 800
 
 WORKDIR /tmp/DoodleDraw/
 
@@ -20,6 +24,6 @@ COPY . .
 RUN qmake
 RUN make
 
-#CMD ["./DoodleDrawClient"]
+CMD ["./DoodleDrawClient"]
 
 
