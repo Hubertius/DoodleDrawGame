@@ -16,7 +16,7 @@ WebSocketHandler::WebSocketHandler(QObject *parent)
 //    connect(m_serverSocketToDatabase, &QWebSocket::textMessageReceived, this, &WebSocketHandler::onDatabaseTextMessageReceived);
 
     m_socketServer = new QWebSocketServer("DoodleDrawServer", QWebSocketServer::NonSecureMode, this);
-    if(m_socketServer->listen(QHostAddress::Any, 8585))
+    if(m_socketServer->listen(QHostAddress::Any, 800))
         qDebug() << "Server is running!";
     else
         qDebug() << "Server unable to start listening for connections";
@@ -57,9 +57,9 @@ void WebSocketHandler::WebSocketHandler::onNewClientSocketConnection()
     }
     qDebug() << "New client ID: " << newClientId;
     auto nextClient = m_socketServer->nextPendingConnection();
-    connect(nextClient, &QWebSocket::textMessageReceived, this, &WebSocketHandler::WebSocketHandler::onClientTextMessageReceived);
-    connect(nextClient, &QWebSocket::disconnected, this, &WebSocketHandler::WebSocketHandler::onClientSocketDisconnect);
-
+    connect(nextClient, &QWebSocket::textMessageReceived, this, &WebSocketHandler::onClientTextMessageReceived);
+    connect(nextClient, &QWebSocket::disconnected, this, &WebSocketHandler::onClientSocketDisconnect);
+    connect(nextClient, QOverload<QAbstractSocket::SocketError>::of(&QWebSocket::error), this, &WebSocketHandler::onClientSocketDisconnect);
     nextClient->setParent(this);
 
     nextClient->sendTextMessage("type:uniqueID;payload:" + newClientId);
@@ -95,6 +95,7 @@ void WebSocketHandler::onClientSocketDisconnect()
         {
             if(itr.value() == clientToDisconnect)
             {
+                qDebug() << "Server app: client socket deleted and removed from list of clients!";
                 m_clientsList.remove(itr.key());
                 clientToDisconnect->deleteLater();
             }

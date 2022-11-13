@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
 #endif
     QGuiApplication app(argc, argv);
     WebSocketHandler clientSocketHandler;
-    clientSocketHandler.connectToServer("ws://127.0.0.1:8585");
+    clientSocketHandler.connectToServer("ws://127.0.0.1:800");
 
     GameManager gameManager;
 
