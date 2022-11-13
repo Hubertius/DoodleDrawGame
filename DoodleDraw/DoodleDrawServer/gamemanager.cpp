@@ -2,6 +2,7 @@
 #include "gamelobbyhandler.h"
 #include <random>
 #include <QRandomGenerator>
+#include <QSqlError>
 
 GameManager::GameManager(QObject *parent)
     : QObject{parent}
@@ -19,6 +20,20 @@ GameManager::GameManager(QObject *parent)
     connect(m_messageProcessHandler, &MessageProcessor::clientNewDoodleDrawing, this, &GameManager::onClientNewDoodleDrawing);
     connect(m_messageProcessHandler, &MessageProcessor::clientFinishedDrawWork, this, &GameManager::onClientFinishedDrawWork);
     connect(m_messageProcessHandler, &MessageProcessor::newVote, this, &GameManager::onNewVote);
+
+    QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
+    db.setHostName("192.168.1.15");
+    db.setPort(3306);
+    db.setDatabaseName("doodle_datas");
+    db.setUserName("root");
+    db.setPassword("Hugo123");
+    if(db.open())
+        qDebug() << "Server App. Connection with database SUCCEEDED";
+    else
+    {
+        qDebug() << "Server App. Establishment of connection with database FAILED";
+        qDebug() << "Error message: " << db.lastError().text();
+    }
 }
 
 const QString& GameManager::generateSthForDrawing()
@@ -32,6 +47,8 @@ const QString& GameManager::generateSthForDrawing()
 
 GameManager::~GameManager()
 {
+    m_sqlDatabase.close();
+    m_sqlDatabase.removeDatabase(m_sqlDatabase.connectionName());
     m_webSocketHandler->deleteLater();
 }
 

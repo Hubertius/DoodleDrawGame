@@ -2,6 +2,8 @@
 #define GAMEMANAGER_H
 
 #include <QObject>
+#include <QSqlDatabase>
+#include <QSql>
 #include "websockethandler.h"
 #include "messageprocessor.h"
 #include "gamelobbyhandler.h"
@@ -12,7 +14,7 @@ class GameManager : public QObject
 private:
     WebSocketHandler * m_webSocketHandler;
     MessageProcessor * m_messageProcessHandler;
-private:
+    QSqlDatabase m_sqlDatabase;
     QMap<QString, GameLobbyHandler *> m_gameLobbys;
     QStringList m_drawingTypes;
 public:
