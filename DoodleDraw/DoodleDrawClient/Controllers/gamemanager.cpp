@@ -14,8 +14,9 @@ GameManager::GameManager(QObject *parent)
     , m_isDrawingFinished(false)
     , m_isVoteFinished(false)
 {
-    m_messageProcessHandler = new MessageProcessorHandler(this);
+    m_messageProcessHandler = new MessageProcessorHandler(this);  
     connect(m_messageProcessHandler, &MessageProcessorHandler::newClientIdRegistration, this, &GameManager::registerClientID);
+    connect(m_messageProcessHandler, &MessageProcessorHandler::successfulLogin, this, &GameManager::onSuccessfulClientLogin);
     connect(m_messageProcessHandler, &MessageProcessorHandler::newLobby, this, &GameManager::joinLobby);
     connect(m_messageProcessHandler, &MessageProcessorHandler::updatedClientsList, this, &GameManager::setLobbyClientsIDs);
     connect(m_messageProcessHandler, &MessageProcessorHandler::newMessageForLobby, this, &GameManager::newMessageForLobby);
@@ -24,6 +25,11 @@ GameManager::GameManager(QObject *parent)
     connect(m_messageProcessHandler, &MessageProcessorHandler::clientReceivedDrawForContinuation, this, &GameManager::onClientReceivedDrawForContinuation);
     connect(m_messageProcessHandler, &MessageProcessorHandler::clientReceivedFinishedDraws, this, &GameManager::onClientReceivedFinishedDraws);
     connect(m_messageProcessHandler, &MessageProcessorHandler::winnerVoted, this, &GameManager::onWinnerVoted);
+}
+
+void GameManager::loginRequest(QString usename, QString password)
+{
+     emit newMessageToSend("type:login;payload:" + usename + "," + password + ";sender:" + m_clientID);
 }
 
 void GameManager::createGameRequest()
@@ -113,6 +119,12 @@ QStringList GameManager::getFinishedDrawingsList()
 QString GameManager::getWinnerClientID()
 {
     return m_winnerClientID;
+}
+
+void GameManager::onSuccessfulClientLogin()
+{
+    qDebug() << "Emitting \"loginSuccessful\" signal for GUI";
+    emit loginSuccessful();
 }
 
 void GameManager::setLobbyClientsIDs(QStringList newClientsOfLobbyList)

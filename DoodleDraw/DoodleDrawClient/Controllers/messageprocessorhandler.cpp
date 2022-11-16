@@ -10,6 +10,7 @@ MessageProcessorHandler::MessageProcessorHandler(QObject *parent)
 void MessageProcessorHandler::processMessage(QString messageFromServer)
 {
     //type:uniqueID;payload:5555
+    //type:loginSuccessful;payload:0
     //type:lobbyCreated;payload:1111;clientsList:1234,4444,5555
     //type:lobbyJoinSuccessful;payload:1111
     //type:lobbyJoinFailed;payload:1111
@@ -31,6 +32,11 @@ void MessageProcessorHandler::processMessage(QString messageFromServer)
             newClientId = newClientId.remove("payload:");
             emit newClientIdRegistration(newClientId);
         }
+    }
+    else if(separatedInfos.first() == "type:loginSuccessful")
+    {
+        qDebug() << "Client App. Successful client login";
+        emit successfulLogin();
     }
     else if(separatedInfos.first() == "type:lobbyCreated" || separatedInfos.first() == "type:lobbyJoinSuccessful")
     {

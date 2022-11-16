@@ -27,9 +27,6 @@ public slots:
     void onNewClientSocketConnection();
     void onClientTextMessageReceived(QString clientMessageReceived);
     void onClientSocketDisconnect();
-
-    void onLoginCheckDataRequest(QString clientID, QString name, QString password);
-    void onDatabaseTextMessageReceived(QString databaseMessageReceived);
 };
 
 #endif // WEBSOCKETHANDLER_H

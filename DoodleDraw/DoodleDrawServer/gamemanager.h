@@ -22,6 +22,7 @@ public:
     const QString& generateSthForDrawing();
     ~GameManager();
 public slots:
+    void onLoginCheckDataRequest(QString clientID, QString name, QString password);
     void createGameLobbyRequest(QString clientID);
     void joinGameLobbyRequest(QString lobbyID, QString clientID);
     void messageLobbyRequest(QString messageContent, QString lobbyID, QString clientID);

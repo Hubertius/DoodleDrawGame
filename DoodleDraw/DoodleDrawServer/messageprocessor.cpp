@@ -10,7 +10,7 @@ MessageProcessor::MessageProcessor(QObject *parent)
 void MessageProcessor::MessageProcessor::processClientMessage(QString messageFromClient)
 {
     qDebug() << "Server App. Message to process: " << messageFromClient;
-    //type:login;payload:0;sender:5555;user:....;password:...
+    //type:login;payload:userInput,passwordInput;sender:5555;
     //type:createGame;payload:0;sender:5555
     //type:joinGame;payload:4000;sender:5555 -> payload as game code
     //type:message;payload:HelloWorld;lobbyID:9999;sender:5555
@@ -23,16 +23,14 @@ void MessageProcessor::MessageProcessor::processClientMessage(QString messageFro
     {
         qDebug() << "Client login request";
         separatedInfos.pop_front();
-        separatedInfos.pop_front();
-        if(separatedInfos.first().contains("sender:"))
+        if(separatedInfos.first().contains("payload:"))
         {
-            QString clientID = separatedInfos.first().remove("sender:");
+            QStringList userData = separatedInfos.first().remove("payload:").split(",");
             separatedInfos.pop_front();
-            if(separatedInfos.first().contains("user:") && separatedInfos.last().contains("password:"))
+            if(separatedInfos.first().contains("sender:"))
             {
-                QString userName = separatedInfos.first().remove("user:");
-                QString userPassword = separatedInfos.last().remove("password:");
-                emit loginRequest(clientID, userName, userPassword);
+                QString clientID = separatedInfos.first().remove("sender:");
+                emit loginRequest(clientID, userData[0], userData[1]);
             }
         }
     }

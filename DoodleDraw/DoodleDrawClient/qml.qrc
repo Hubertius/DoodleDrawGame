@@ -12,5 +12,6 @@
         <file>ui/DrawingInstructionScreen.qml</file>
         <file>ui/VoteScreen.qml</file>
         <file>ui/WinnerScreen.qml</file>
+        <file>ui/LoginScreen.qml</file>
     </qresource>
 </RCC>

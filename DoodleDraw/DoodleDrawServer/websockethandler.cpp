@@ -73,19 +73,6 @@ void WebSocketHandler::WebSocketHandler::onClientTextMessageReceived(QString mes
     emit newMessageToProcess(messageReceived);
 }
 
-void WebSocketHandler::onLoginCheckDataRequest(QString clientID, QString name, QString password)
-{
-    // send text message to app with databases, which will be parsed in app with no-sql database
-    //clientID:5555;name:name;password:password
-}
-
-void WebSocketHandler::onDatabaseTextMessageReceived(QString databaseMessageReceived)
-{
-    //clientID:5555,authorized:yes/no
-    // if no -> client removed from list, disconnect signal to its client is send
-    // if yes -> everything ok and client is allowed to continue
-}
-
 void WebSocketHandler::onClientSocketDisconnect()
 {
     auto clientToDisconnect = qobject_cast<QWebSocket *>(sender());

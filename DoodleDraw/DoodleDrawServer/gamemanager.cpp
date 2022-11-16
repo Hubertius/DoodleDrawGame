@@ -3,6 +3,7 @@
 #include <random>
 #include <QRandomGenerator>
 #include <QSqlError>
+#include <QSqlQuery>
 
 GameManager::GameManager(QObject *parent)
     : QObject{parent}
@@ -11,8 +12,7 @@ GameManager::GameManager(QObject *parent)
     m_webSocketHandler = new WebSocketHandler(this);
     m_messageProcessHandler = new MessageProcessor(this);
     connect(m_webSocketHandler, &WebSocketHandler::newMessageToProcess, m_messageProcessHandler, &MessageProcessor::processClientMessage);
-    connect(m_messageProcessHandler, &MessageProcessor::loginRequest, m_webSocketHandler, &WebSocketHandler::onLoginCheckDataRequest);
-
+    connect(m_messageProcessHandler, &MessageProcessor::loginRequest, this, &GameManager::onLoginCheckDataRequest);
     connect(m_messageProcessHandler, &MessageProcessor::createGameLobbyRequest, this, &GameManager::createGameLobbyRequest);
     connect(m_messageProcessHandler, &MessageProcessor::joinGameLobbyRequest, this, &GameManager::joinGameLobbyRequest);
     connect(m_messageProcessHandler, &MessageProcessor::messageLobbyRequest, this, &GameManager::messageLobbyRequest);
@@ -50,6 +50,25 @@ GameManager::~GameManager()
     m_sqlDatabase.close();
     m_sqlDatabase.removeDatabase(m_sqlDatabase.connectionName());
     m_webSocketHandler->deleteLater();
+}
+
+void GameManager::onLoginCheckDataRequest(QString clientID, QString name, QString password)
+{
+    QSqlQuery query;
+    if(!query.exec("SELECT * FROM Users WHERE Name='" + name + "' AND Password='" + password + "'"))
+    {
+        qDebug() << "Query failed, something went terribly wrong!";
+        qDebug() << "Error message: " << query.lastError().text();
+    }
+    else if(!query.first())
+    {
+        qDebug() << "Incorrect Username or Password!";
+    }
+    else
+    {
+        qDebug() << "Correct Login and password! :)";
+         m_webSocketHandler->sendTextMessageToClient("type:loginSuccessful;payload:0", clientID);
+    }
 }
 
 void GameManager::createGameLobbyRequest(QString clientID)

@@ -11,6 +11,7 @@ public:
     void processMessage(QString messageFromServer);
 signals:
     void newClientIdRegistration(QString idOfClient);
+    void successfulLogin();
     void newLobby(QString lobbyID, QStringList clients);
     void updatedClientsList(QStringList updatedClientsIDs);
     void newMessageForLobby(QString messageForDisplay);

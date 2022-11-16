@@ -10,6 +10,7 @@ Window {
 
     Connections {
         target: gameManager
+        onLoginSuccessful: mainLoader.source = "qrc:/ui/MainMenuScreen.qml"
         onChangeOfGameLobby: mainLoader.source = "qrc:/ui/LobbyScreen.qml"
         onNewGameBegins: mainLoader.source = "qrc:/ui/DoodleScreen.qml"
         onClientDrawingForAddedImageStarted: mainLoader.source = "qrc:/ui/DrawingInstructionScreen.qml"
@@ -20,6 +21,6 @@ Window {
     Loader {
         id: mainLoader
         anchors.fill: parent
-        source: "qrc:/ui/MainMenuScreen.qml"
+        source: "qrc:/ui/LoginScreen.qml"
     }
 }

@@ -26,6 +26,7 @@ private:
 
 public:
     explicit GameManager(QObject *parent = nullptr);
+    Q_INVOKABLE void loginRequest(QString usename, QString password);
     Q_INVOKABLE void createGameRequest();
     Q_INVOKABLE void joinLobbyRequest(QString lobbyToJoinID);
     Q_INVOKABLE void sendMessageToLobby(QString messageToSend);
@@ -42,6 +43,7 @@ public:
     QStringList getFinishedDrawingsList();
     QString getWinnerClientID();
 signals:
+    void loginSuccessful();
     void roomLobbyCodeChanged();
     void newMessageToSend(QString messageToSend);
     void changeOfGameLobby();
@@ -57,6 +59,7 @@ signals:
     void gameOver();
 
 public slots:
+    void onSuccessfulClientLogin();
     void setRoomLobbyCode(QString lobbyCode);
     void setLobbyClientsIDs(QStringList newClientsOfLobbyList);
     void setDrawingInstruction(QString drawOrder);
